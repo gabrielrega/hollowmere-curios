@@ -23,6 +23,8 @@
   --leaf:#95cb7e;
   --bubble-ink:#2a2116;
   --scrim:rgba(8,13,13,.6);
+  --v-tint-good:rgba(149,203,126,.12);
+  --v-tint-bad:rgba(226,114,95,.14);
   --f-display:"IM Fell English SC","Iowan Old Style","Palatino Linotype",Georgia,serif;
   --f-body:"Alegreya Sans","Gill Sans","Segoe UI",system-ui,sans-serif;
   color-scheme:dark;
@@ -38,6 +40,11 @@ button:focus-visible,input:focus-visible{outline:2px solid var(--parch);outline-
 #bubbles{position:fixed;inset:0;pointer-events:none;z-index:5;overflow:hidden}
 .bubble{position:absolute;left:0;top:0;padding:5px 10px;border-radius:12px;background:var(--parch);color:var(--bubble-ink);font-weight:800;font-size:13px;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.4);will-change:transform}
 .bubble::after{content:"";position:absolute;left:50%;bottom:-5px;width:10px;height:10px;background:var(--parch);transform:translateX(-50%) rotate(45deg);border-radius:2px}
+.bubble.good,.bubble.bad,.bubble.meh{font-size:15px;padding:6px 12px 6px 9px;display:flex;align-items:center;gap:6px}
+.bubble.good{background:var(--leaf);color:var(--ink)} .bubble.good::after{background:var(--leaf)}
+.bubble.bad{background:var(--rose);color:var(--ink)} .bubble.bad::after{background:var(--rose)}
+.bubble.meh{background:var(--muted);color:var(--ink)} .bubble.meh::after{background:var(--muted)}
+.bubble svg{width:16px;height:16px;flex:none}
 .float{position:absolute;font-family:var(--f-display);font-size:26px;color:var(--brass);text-shadow:0 2px 8px rgba(0,0,0,.7);animation:floatUp 1.4s ease-out forwards;white-space:nowrap}
 .float.loss{color:var(--rose)}
 @keyframes floatUp{from{transform:translate(-50%,-50%);opacity:1}to{transform:translate(-50%,-220%);opacity:0}}
@@ -96,6 +103,24 @@ h3{font-size:19px}
 .pat-wrap{text-align:right}
 .pat-wrap .eyebrow{margin-bottom:2px}
 .quote{margin:8px 0 10px;font-size:17px;line-height:1.35;color:var(--parch);font-style:italic;min-height:2.7em;text-wrap:pretty}
+.hg-status{margin:-4px 0 10px;font-size:14px;font-weight:700;color:var(--rose);display:flex;align-items:center;gap:6px}
+.hg-status svg{width:16px;height:16px;flex:none}
+.hg-status b{color:var(--parch)}
+.verdict{position:absolute;inset:0;z-index:2;border-radius:inherit;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;padding:20px max(16px,env(safe-area-inset-left,0px)) calc(20px + env(safe-area-inset-bottom,0px));background:var(--panel);cursor:pointer}
+.verdict .stamp{display:flex;align-items:center;gap:12px;padding:8px 22px 8px 14px;border:3px solid currentColor;border-radius:14px;transform:rotate(-4deg);animation:stamp .38s cubic-bezier(.2,1.6,.4,1)}
+.verdict .stamp svg{width:40px;height:40px;flex:none}
+.verdict .stamp b{font-family:var(--f-display);font-weight:400;font-size:44px;line-height:1;letter-spacing:.02em}
+.verdict.good{color:var(--leaf);background:linear-gradient(var(--v-tint-good),var(--v-tint-good)),var(--panel)}
+.verdict.bad{color:var(--rose);background:linear-gradient(var(--v-tint-bad),var(--v-tint-bad)),var(--panel)}
+.verdict.meh{color:var(--muted)}
+.verdict .v-sub{font-size:17px;font-weight:800;color:var(--parch);font-variant-numeric:tabular-nums;margin-top:8px}
+.verdict .v-note{font-size:14px;color:var(--muted);max-width:34ch;text-wrap:balance}
+.verdict .v-skip{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+@keyframes stamp{from{transform:rotate(-4deg) scale(2.2);opacity:0}to{transform:rotate(-4deg) scale(1);opacity:1}}
+.last{margin:8px 0 0;font-size:13px;color:var(--muted);display:flex;align-items:center;gap:8px;min-width:0}
+.last .pill{flex:none;font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:999px;color:var(--ink)}
+.last .pill.good{background:var(--leaf)} .last .pill.bad{background:var(--rose)} .last .pill.meh{background:var(--muted)}
+.last span:last-child{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .coach{margin:-4px 0 10px;font-size:13px;color:var(--brass);background:rgba(227,181,94,.08);border:1px dashed var(--brass-deep);padding:7px 10px;border-radius:10px}
 .hg-item{display:flex;align-items:center;gap:12px;padding:10px;background:var(--panel-hi);border-radius:14px}
 .hg-item-text{flex:1;min-width:0}
@@ -208,6 +233,7 @@ input[type=range]{width:100%;accent-color:var(--brass);height:30px;margin:6px 0 
       <div><span class="eyebrow">Shop open</span><div id="dockText">Waiting for the door bell.</div></div>
       <div class="count" id="dockCount">0 / 5</div>
     </div>
+    <p class="last" id="dockLast" hidden></p>
     <p class="rumor" id="dockRumor" hidden></p>
   </div>
 </section>
@@ -219,6 +245,7 @@ input[type=range]{width:100%;accent-color:var(--brass);height:30px;margin:6px 0 
       <div class="pat-wrap"><span class="eyebrow">Patience</span><div class="patience" id="hgPat"></div></div>
     </div>
     <p class="quote" id="hgQuote"></p>
+    <p class="hg-status" id="hgStatus" hidden></p>
     <p class="coach" id="hgCoach" hidden>Start high, then come down. Every counter-offer is below what they will really pay.</p>
     <div class="hg-item">
       <span class="icon" id="hgIcon"></span>
@@ -240,6 +267,7 @@ input[type=range]{width:100%;accent-color:var(--brass);height:30px;margin:6px 0 
       <button id="hgOffer" class="btn primary">Ask</button>
     </div>
   </div>
+  <div class="verdict" id="hgVerdict" hidden role="status"></div>
 </section>
 
 <section id="night" class="sheet" hidden>
@@ -845,7 +873,17 @@ function applyLighting(p, n){
 
 /* ---------------- DOM helpers ---------------- */
 function makeBubble(){ const b = document.createElement('div'); b.className='bubble'; b.hidden = true; $('#bubbles').appendChild(b); return b; }
-function say(ch, text, dur){ ch.bubble.textContent = text; ch.bubble.hidden = false; ch.sayT = dur || 1.9; }
+const GLYPH = {
+  good:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7"/></svg>',
+  bad:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>',
+  meh:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M14 6l-6 6 6 6"/></svg>',
+};
+function say(ch, text, dur, kind){
+  ch.bubble.className = 'bubble' + (kind ? ' '+kind : '');
+  if(kind){ ch.bubble.innerHTML = GLYPH[kind] + '<span></span>'; ch.bubble.lastChild.textContent = text; }
+  else ch.bubble.textContent = text;
+  ch.bubble.hidden = false; ch.sayT = dur || 1.9;
+}
 const projV = new THREE.Vector3();
 function toScreen(p){ projV.copy(p).project(camera); return [(projV.x+1)/2*W, (1-projV.y)/2*H, projV.z]; }
 function floatText(world, text, cls){
@@ -940,8 +978,13 @@ function updateChar(c, dt){
   let diff = c.faceY - c.g.rotation.y; diff = Math.atan2(Math.sin(diff), Math.cos(diff)); c.g.rotation.y += diff*Math.min(1, dt*10);
   c.walkK += ((moving?1:0) - c.walkK)*Math.min(1, dt*8);
   const P = c.parts, ph = c.t*9, sw = Math.sin(ph)*0.7*c.walkK;
-  P.w.position.y = Math.abs(Math.sin(ph))*0.06*c.walkK + Math.sin(c.t*2.1)*0.008;
-  P.w.rotation.z = Math.sin(ph)*0.05*c.walkK;
+  let hop = 0, shake = 0;
+  if(c.react){ c.react.t += dt; const k = c.react.t;
+    if(c.react.kind === 'good'){ if(k < 0.9) hop = Math.abs(Math.sin(k/0.45*Math.PI))*0.16*(1-k/0.9); }
+    else if(c.react.kind === 'bad'){ if(k < 0.7) shake = Math.sin(k*48)*0.14*(1-k/0.7); }
+    if(k > 1) c.react = null; }
+  P.w.position.y = Math.abs(Math.sin(ph))*0.06*c.walkK + Math.sin(c.t*2.1)*0.008 + hop;
+  P.w.rotation.z = Math.sin(ph)*0.05*c.walkK + shake;
   const carryX = c.carrying ? -0.95 : 0;
   P.armL.rotation.x = carryX + (c.carrying ? sw*0.15 : sw);
   P.armR.rotation.x = carryX - (c.carrying ? sw*0.15 : sw);
@@ -981,6 +1024,9 @@ function updateHaggle(){
   setText($('#hgArch'), c.a.label); setText($('#hgName'), c.name);
   $('#hgPat').innerHTML = Array.from({length:H.max}, (_,i) => `<span class="pip${i<H.patience?' on':''}"></span>`).join('');
   setText($('#hgQuote'), '“' + H.quote + '”');
+  const st = $('#hgStatus');
+  if(H.refused != null){ st.hidden = false; st.innerHTML = `${GLYPH.bad}<span>${H.seller ? 'Turned down' : 'Refused'} your ${H.refused}g. Their counter: <b>${H.last}g</b></span>`; }
+  else st.hidden = true;
   $('#hgIcon').innerHTML = iconHTML(H.t);
   setText($('#hgItem'), it.name);
   const free = freeCount();
@@ -1009,9 +1055,10 @@ function updateHaggle(){
     if(H.last != null){ take.hidden = false; setText(take, `Take ${H.last}g`); take.disabled = false; } else take.hidden = true;
   }
 }
-function nudge(d){ const H = R.haggle; if(!H) return; H.price = clamp(H.price + d, H.lo, H.hi); sfx('click'); updateHaggle(); }
+function nudge(d){ const H = R.haggle; if(!H || H.resolved) return; H.price = clamp(H.price + d, H.lo, H.hi); sfx('click'); updateHaggle(); }
 function offer(){
-  const H = R.haggle; if(!H) return; const p = H.price;
+  const H = R.haggle; if(!H || H.resolved) return; const p = H.price;
+  H.refused = p;
   if(!H.seller){
     if(p <= H.wtp) return closeSale(p);
     const insult = p/H.wtp > 1.5; H.patience -= insult ? 2 : 1;
@@ -1032,7 +1079,25 @@ function offer(){
   }
   updateHaggle();
 }
-function takeCounter(){ const H = R.haggle; if(!H || H.last == null) return; if(H.seller) closeBuy(H.last); else closeSale(H.last); }
+function takeCounter(){ const H = R.haggle; if(!H || H.resolved || H.last == null) return; if(H.seller) closeBuy(H.last); else closeSale(H.last); }
+/* Show the outcome stamp over the haggle sheet, hold it, then let the customer go. Tap to skip. */
+function resolve(kind, title, sub, note, last, after){
+  const H = R.haggle; H.resolved = true;
+  const v = $('#hgVerdict');
+  v.className = 'verdict ' + kind;
+  v.innerHTML = `<div class="stamp">${GLYPH[kind]}<b></b></div><div class="v-sub"></div><div class="v-note"></div><div class="v-skip">Tap to continue</div>`;
+  v.querySelector('b').textContent = title; v.querySelector('.v-sub').textContent = sub; v.querySelector('.v-note').textContent = note || '';
+  v.hidden = false;
+  H.c.react = {kind, t:0};
+  let done = false;
+  const finish = () => { if(done) return; done = true; v.hidden = true; v.onclick = null; setLast(kind, title, last); endHaggle(); after(); };
+  v.onclick = finish; later(2.2, finish);
+}
+function setLast(kind, label, text){
+  const el = $('#dockLast'); el.hidden = false;
+  el.innerHTML = `<span class="pill ${kind}"></span><span></span>`;
+  el.firstChild.textContent = label; el.lastChild.textContent = 'Last: ' + text;
+}
 function endHaggle(){
   R.haggle = null; if(R.counterItem){ scene.remove(R.counterItem); R.counterItem = null; }
   showSheet('#dock'); setMode('room'); releaseCounter(); updateHUD();
@@ -1047,29 +1112,51 @@ function closeSale(p){
   S.gold += p; T.revenue += p; T.cogs += H.cost; T.sales++;
   S.totals.sales++; S.totals.revenue += p; S.totals.best = Math.max(S.totals.best, p);
   S.slots[c.slot] = null; R.reserved[c.slot] = false; refreshShelves();
-  if(p <= H.v){ addRep(0.09); T.delighted++; say(c, pick(['A bargain!','Splendid!',"I'll be back!"])); }
-  else { addRep(0.04); say(c, pick(['Deal.','Fair enough.','Done.'])); }
+  const happy = p <= H.v;
+  if(happy){ addRep(0.09); T.delighted++; say(c, pick(['A bargain!','Splendid!',"I'll be back!"]), 3, 'good'); }
+  else { addRep(0.04); say(c, pick(['Deal.','Fair enough.','Done.']), 3, 'good'); }
   attachCarry(c, H.t);
+  if(R.counterItem){ scene.remove(R.counterItem); R.counterItem = null; }
   floatText(COUNTER_TOP.clone().add(V(0,0.5,0)), `+${p}g`); coinBurst(); sfx('coin');
-  keeper.jump = 0.5; say(keeper, 'Thank you!', 1.4);
-  endHaggle(); leave(c); checkCharter();
+  keeper.jump = 0.5; say(keeper, 'Thank you!', 1.6);
+  const profit = p - H.cost;
+  resolve('good', 'Sold', `${ITEMS[H.t].name} · +${p}g`,
+    `${profit >= 0 ? 'Profit' : 'Loss'} ${Math.abs(profit)}g${happy ? '. They loved the price.' : '.'}`,
+    `${ITEMS[H.t].name} to ${c.name}, ${p}g`,
+    () => { leave(c); checkCharter(); });
+  updateHUD();
 }
 function closeBuy(p){
   const H = R.haggle, c = H.c, T = S.today; const i = freeSlot(); if(i < 0 || p > S.gold) return;
   S.gold -= p; T.spentBuying += p; T.bought++;
   placeItem(i, H.t, p);
-  if(p >= H.v*0.75){ addRep(0.08); T.delighted++; say(c, pick(['Generous!','Pleasure doing business.'])); }
-  else { addRep(0.03); say(c, pick(['Fine, fine.','Done.','Coin is coin.'])); }
-  floatText(COUNTER_TOP.clone().add(V(0,0.5,0)), `−${p}g`, 'loss'); sfx('pop');
-  endHaggle(); leave(c);
+  if(p >= H.v*0.75){ addRep(0.08); T.delighted++; say(c, pick(['Generous!','Pleasure doing business.']), 3, 'good'); }
+  else { addRep(0.03); say(c, pick(['Fine, fine.','Done.','Coin is coin.']), 3, 'good'); }
+  if(R.counterItem){ scene.remove(R.counterItem); R.counterItem = null; }
+  floatText(COUNTER_TOP.clone().add(V(0,0.5,0)), `−${p}g`, 'loss'); sfx('coin');
+  resolve('good', 'Bought', `${ITEMS[H.t].name} · −${p}g`,
+    `Now on your shelf. Fair price is about ${H.v}g.`,
+    `${ITEMS[H.t].name} from ${c.name}, ${p}g`,
+    () => leave(c));
+  updateHUD();
 }
 function walkout(angry){
-  const H = R.haggle; if(!H) return; const c = H.c, T = S.today;
+  const H = R.haggle; if(!H || H.resolved) return; const c = H.c, T = S.today;
   if(!H.seller){ R.reserved[c.slot] = false; refreshShelves(); popMesh(R.slotMesh[c.slot]); }
   else attachCarry(c, H.t);
-  if(angry){ T.angry++; addRep(-0.15); say(c, pick(['Thief!','Robbery!',"I'll go to Larkspur!"]), 2.2); sfx('bad'); }
-  else { addRep(-0.03); say(c, pick(['Fine, then.','Suit yourself.'])); }
-  endHaggle(); leave(c);
+  if(R.counterItem){ scene.remove(R.counterItem); R.counterItem = null; }
+  const name = ITEMS[H.t].name;
+  if(angry){
+    T.angry++; addRep(-0.15); say(c, pick(['Thief!','Robbery!',"I'll go to Larkspur!"]), 3, 'bad'); sfx('bad');
+    resolve('bad', 'Walked out', H.seller ? `${c.name} kept the ${name}` : `No sale · ${name} back on the shelf`,
+      H.seller ? 'Your offers were too low. Reputation fell.' : 'Your price was too high. Reputation fell.',
+      `${c.name} stormed out over the ${name}`, () => leave(c));
+  } else {
+    addRep(-0.03); say(c, pick(['Fine, then.','Suit yourself.']), 3, 'meh'); sfx('hmm');
+    resolve('meh', H.seller ? 'Declined' : 'Sent away', H.seller ? `You passed on the ${name}` : `No sale · ${name} back on the shelf`,
+      '', H.seller ? `passed on ${c.name}'s ${name}` : `${c.name} left without the ${name}`, () => leave(c));
+  }
+  updateHUD();
 }
 
 /* ---------------- day / night ---------------- */
@@ -1080,6 +1167,7 @@ function beginDay(){
   S.today.visitors = R.total;
   R.spawned = 0; R.done = 0; R.ending = false; R.nextSpawn = R.time + 1.4; R.firstHaggles = S.day===1 ? R.firstHaggles : 99;
   showSheet('#dock'); setMode('room');
+  $('#dockLast').hidden = true;
   const rm = $('#dockRumor');
   if(S.rumors && S.rumors.length){ rm.hidden = false; rm.innerHTML = '<b>Tavern talk:</b> ' + S.rumors.map(r => r.text).join(' '); }
   else rm.hidden = true;
