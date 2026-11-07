@@ -1,0 +1,1367 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Hollowmere Curios</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+Sans:wght@400;500;700;800&family=IM+Fell+English+SC&display=swap">
+<style>
+/* Layout: full-bleed 3D shop diorama, a brass HUD strip on top, one sheet docked at the bottom */
+:root{
+  --ink:#111919;
+  --panel:#192323;
+  --panel-hi:#223030;
+  --line:#33443f;
+  --brass:#e3b55e;
+  --brass-deep:#9c7432;
+  --parch:#efe5cd;
+  --muted:#a2ae9f;
+  --rose:#e2725f;
+  --leaf:#95cb7e;
+  --bubble-ink:#2a2116;
+  --scrim:rgba(8,13,13,.6);
+  --f-display:"IM Fell English SC","Iowan Old Style","Palatino Linotype",Georgia,serif;
+  --f-body:"Alegreya Sans","Gill Sans","Segoe UI",system-ui,sans-serif;
+  color-scheme:dark;
+}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{height:100%}
+[hidden]{display:none!important}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;overflow:hidden;background:var(--ink);color:var(--parch);font-family:var(--f-body);font-size:15px;line-height:1.4;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;touch-action:manipulation}
+button:focus-visible,input:focus-visible{outline:2px solid var(--parch);outline-offset:2px}
+#scene{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+#bubbles{position:fixed;inset:0;pointer-events:none;z-index:5;overflow:hidden}
+.bubble{position:absolute;left:0;top:0;padding:5px 10px;border-radius:12px;background:var(--parch);color:var(--bubble-ink);font-weight:800;font-size:13px;white-space:nowrap;box-shadow:0 4px 14px rgba(0,0,0,.4);will-change:transform}
+.bubble::after{content:"";position:absolute;left:50%;bottom:-5px;width:10px;height:10px;background:var(--parch);transform:translateX(-50%) rotate(45deg);border-radius:2px}
+.float{position:absolute;font-family:var(--f-display);font-size:26px;color:var(--brass);text-shadow:0 2px 8px rgba(0,0,0,.7);animation:floatUp 1.4s ease-out forwards;white-space:nowrap}
+.float.loss{color:var(--rose)}
+@keyframes floatUp{from{transform:translate(-50%,-50%);opacity:1}to{transform:translate(-50%,-220%);opacity:0}}
+
+/* HUD */
+#hud{position:fixed;top:0;left:0;right:0;z-index:10;padding-top:calc(env(safe-area-inset-top,0px) + 10px);padding-bottom:14px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));background:linear-gradient(to bottom,rgba(9,14,14,.9),rgba(9,14,14,.55) 70%,rgba(9,14,14,0));pointer-events:none}
+.hud-in{display:flex;align-items:center;justify-content:space-between;gap:10px;max-width:900px;margin:0 auto}
+.hud-day{display:flex;flex-direction:column;gap:2px;min-width:0}
+.day{font-family:var(--f-display);font-size:25px;color:var(--brass);line-height:1}
+.tod{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.hud-right{display:flex;align-items:center;gap:8px}
+.gold{display:flex;align-items:center;gap:6px;font-weight:800;font-size:18px;font-variant-numeric:tabular-nums;background:rgba(17,25,25,.75);border:1px solid var(--line);padding:3px 11px 3px 6px;border-radius:999px}
+.gold.neg span{color:var(--rose)}
+.coin{width:18px;height:18px;flex:none}
+.stars{position:relative;display:inline-block;font-size:15px;letter-spacing:1px;line-height:1;white-space:nowrap}
+.s-bg{color:rgba(239,229,205,.22)}
+.s-fg{position:absolute;left:0;top:0;overflow:hidden;color:var(--brass);width:20%}
+.icon-btn{pointer-events:auto;width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:rgba(17,25,25,.75);display:grid;place-items:center;cursor:pointer;color:var(--parch)}
+.icon-btn svg{width:20px;height:20px}
+.dayline{max-width:900px;height:3px;margin:9px auto 0;background:rgba(239,229,205,.12);border-radius:2px;overflow:hidden}
+.dayline i{display:block;height:100%;width:0;background:var(--brass);transition:width .6s}
+
+/* Toasts */
+#toasts{position:fixed;left:0;right:0;top:calc(var(--hud-h,70px) + 4px);z-index:15;display:flex;flex-direction:column;align-items:center;gap:6px;pointer-events:none;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.toast{background:rgba(17,25,25,.94);border:1px solid var(--line);color:var(--parch);padding:8px 14px;border-radius:12px;font-size:14px;max-width:440px;text-align:center;text-wrap:balance;animation:toast 3.6s forwards}
+.toast b{color:var(--brass)}
+@keyframes toast{0%{opacity:0;transform:translateY(-6px)}8%{opacity:1;transform:none}85%{opacity:1}100%{opacity:0}}
+
+/* Sheets */
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:12;background:var(--panel);border-top:1px solid var(--brass-deep);border-radius:20px 20px 0 0;box-shadow:0 -14px 34px rgba(0,0,0,.45);padding-top:14px;padding-bottom:calc(14px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.sheet:not([hidden]){animation:rise .28s ease-out}
+@keyframes rise{from{opacity:0;translate:0 26px}to{opacity:1;translate:0 0}}
+.sheet-in{max-width:520px;margin:0 auto}
+@media (min-width:720px){
+  .sheet{left:50%;right:auto;width:560px;transform:translateX(-50%);bottom:16px;border-radius:20px;border:1px solid var(--brass-deep);padding-bottom:14px}
+}
+.eyebrow{display:block;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700}
+h2,h3{font-family:var(--f-display);font-weight:400;color:var(--brass);margin:0;text-wrap:balance}
+h2{font-size:26px;line-height:1.05}
+h3{font-size:19px}
+
+/* Dock */
+.dock-row{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.dock-row > div{min-width:0}
+#dockText{font-size:16px;font-weight:700}
+.count{font-variant-numeric:tabular-nums;font-weight:800;color:var(--brass);white-space:nowrap;font-size:15px}
+.rumor{margin:8px 0 0;font-size:13px;color:var(--muted)}
+.rumor b{color:var(--parch);font-weight:700}
+
+/* Haggle */
+.hg-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.who b{display:block;font-family:var(--f-display);font-weight:400;font-size:24px;color:var(--parch);line-height:1.05}
+.patience{display:flex;gap:5px;padding-top:6px;flex:none}
+.pip{width:11px;height:11px;border-radius:50%;border:1.5px solid var(--brass);transition:background .2s}
+.pip.on{background:var(--brass)}
+.pat-wrap{text-align:right}
+.pat-wrap .eyebrow{margin-bottom:2px}
+.quote{margin:8px 0 10px;font-size:17px;line-height:1.35;color:var(--parch);font-style:italic;min-height:2.7em;text-wrap:pretty}
+.coach{margin:-4px 0 10px;font-size:13px;color:var(--brass);background:rgba(227,181,94,.08);border:1px dashed var(--brass-deep);padding:7px 10px;border-radius:10px}
+.hg-item{display:flex;align-items:center;gap:12px;padding:10px;background:var(--panel-hi);border-radius:14px}
+.hg-item-text{flex:1;min-width:0}
+.hg-item-text b{display:block;font-size:16px}
+.hg-item-text span{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.icon{width:46px;height:46px;flex:none;border-radius:11px;background:radial-gradient(circle at 50% 38%,var(--line),var(--panel));display:grid;place-items:center;overflow:hidden}
+.icon img{width:46px;height:46px;display:block}
+.tag{font-size:12px;font-weight:800;padding:3px 8px;border-radius:999px;white-space:nowrap}
+.tag.up{color:var(--leaf);background:rgba(149,203,126,.13)}
+.tag.down{color:var(--rose);background:rgba(226,114,95,.13)}
+.tag.flat{color:var(--muted);background:rgba(162,174,159,.1)}
+.read{margin:10px 0 0;font-size:14px;color:var(--leaf);display:flex;gap:8px;align-items:center}
+.read svg{width:18px;height:18px;flex:none}
+.price-row{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:12px}
+.step{width:50px;height:48px;flex:none;border-radius:12px;background:var(--panel-hi);border:1px solid var(--line);font-weight:800;font-size:15px;cursor:pointer;font-variant-numeric:tabular-nums}
+.step:active{background:var(--line)}
+.price{flex:1;text-align:center;min-width:0}
+.price output{font-family:var(--f-display);font-size:44px;color:var(--brass);line-height:1;font-variant-numeric:tabular-nums}
+.price .g{font-family:var(--f-display);font-size:24px;color:var(--brass-deep);margin-left:2px}
+.price small{display:block;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;margin-top:2px}
+.price small.neg{color:var(--rose)}
+.price small.pos{color:var(--leaf)}
+input[type=range]{width:100%;accent-color:var(--brass);height:30px;margin:6px 0 4px}
+.hg-actions{display:flex;gap:8px;margin-top:6px}
+.hg-actions .btn{flex:1 1 0;min-width:0;padding:4px 8px;white-space:normal;line-height:1.1;font-size:15px}
+
+.btn{appearance:none;border:0;font-weight:800;font-size:16px;min-height:50px;padding:0 18px;border-radius:13px;cursor:pointer;white-space:nowrap}
+.btn.primary{background:var(--brass);color:var(--ink)}
+.btn.secondary{background:var(--panel-hi);color:var(--brass);border:1px solid var(--brass-deep)}
+.btn.ghost{background:transparent;color:var(--muted);border:1px solid var(--line)}
+.btn.danger{background:transparent;color:var(--rose);border:1px solid var(--rose)}
+.btn.wide{width:100%}
+.btn:disabled{opacity:.42;cursor:not-allowed}
+.btn:active:not(:disabled){transform:translateY(1px)}
+
+/* Night */
+#night{display:flex;flex-direction:column;max-height:66%}
+@media (min-width:720px){#night{max-height:74%}}
+#night .sheet-in{display:flex;flex-direction:column;min-height:0;flex:1 1 auto;width:100%;gap:12px}
+.night-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:10px}
+.tabs{display:flex;background:var(--ink);border:1px solid var(--line);border-radius:12px;padding:3px;gap:2px}
+.tabs button{border:0;background:transparent;padding:8px 11px;border-radius:9px;font-weight:700;font-size:14px;color:var(--muted);cursor:pointer}
+.tabs button[aria-selected=true]{background:var(--panel-hi);color:var(--brass)}
+.night-body{overflow-y:auto;min-height:0;flex:1 1 auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;margin:0 -6px;padding:0 6px}
+.ledger{display:grid;grid-template-columns:1fr auto;gap:0;margin:0}
+.ledger dt,.ledger dd{padding:8px 0;border-bottom:1px solid var(--line);margin:0}
+.ledger dt{color:var(--muted)}
+.ledger dd{text-align:right;font-weight:800;font-variant-numeric:tabular-nums}
+.ledger .total dt{color:var(--parch);font-weight:800}
+.ledger .total dd{color:var(--brass);font-size:18px}
+.pos{color:var(--leaf)} .neg{color:var(--rose)}
+.note{font-size:14px;color:var(--muted);margin:12px 0 0;text-wrap:pretty}
+.note b{color:var(--parch)}
+.warn{font-size:14px;color:var(--rose);border:1px solid var(--rose);border-radius:12px;padding:9px 12px;margin:12px 0 0}
+.notices{background:var(--panel-hi);border-radius:14px;padding:12px 14px;margin-bottom:12px}
+.notices h3{font-size:17px;margin-bottom:4px}
+.notice{margin:6px 0 0;font-size:15px;font-style:italic;text-wrap:pretty}
+.notice small{display:block;font-style:normal;font-size:12px;color:var(--muted);margin-top:2px}
+.space{display:flex;justify-content:space-between;gap:10px;font-size:13px;color:var(--muted);padding:2px 0 6px;border-bottom:1px solid var(--line)}
+.space b{color:var(--parch);font-variant-numeric:tabular-nums}
+.mrow{display:grid;grid-template-columns:46px minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line)}
+.m-name b{display:block;font-size:15px;line-height:1.2}
+.m-name span{font-size:12px;color:var(--muted)}
+.m-num{text-align:right;font-variant-numeric:tabular-nums}
+.m-num b{display:block;font-size:17px}
+.m-num .tag{display:inline-block;margin-top:2px}
+.buy{min-height:42px;padding:0 14px;font-size:14px}
+.ucard{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.ucard b{font-size:16px}
+.ucard p{grid-column:1;margin:0;font-size:13px;color:var(--muted);text-wrap:pretty}
+.ucard .btn{grid-row:1 / span 2;grid-column:2;min-height:44px;font-size:14px}
+
+/* Overlays */
+.overlay{position:fixed;inset:0;z-index:30;display:grid;place-items:center;overflow-y:auto;background:var(--scrim);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);padding-top:calc(env(safe-area-inset-top,0px) + 20px);padding-bottom:calc(env(safe-area-inset-bottom,0px) + 20px);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.card{width:100%;max-width:440px;background:var(--panel);border:1px solid var(--brass-deep);outline:1px solid rgba(227,181,94,.2);outline-offset:-8px;border-radius:22px;padding:26px 22px 22px;box-shadow:0 24px 60px rgba(0,0,0,.5);animation:rise .35s ease-out}
+.card h1{font-family:var(--f-display);font-weight:400;font-size:40px;line-height:.98;color:var(--brass);margin:6px 0 12px;text-wrap:balance}
+.card p{margin:0 0 12px;font-size:15.5px;text-wrap:pretty}
+.card ol{margin:0 0 14px;padding:0;list-style:none;display:grid;gap:8px;counter-reset:s}
+.card li{counter-increment:s;display:grid;grid-template-columns:24px 1fr;gap:8px;font-size:14.5px;color:var(--parch)}
+.card li::before{content:counter(s);font-family:var(--f-display);color:var(--brass);font-size:18px;line-height:1.1}
+.goal{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px}
+.card-actions{display:grid;gap:8px;margin-top:16px}
+.err{color:var(--rose)}
+@media (prefers-reduced-motion:reduce){
+  *{animation-duration:.01ms!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+<canvas id="scene" aria-label="Your shop, seen from above"></canvas>
+<div id="bubbles"></div>
+
+<header id="hud">
+  <div class="hud-in">
+    <div class="hud-day"><span class="day" id="hudDay">Day 1</span><span class="tod" id="hudTod">Morning</span></div>
+    <div class="hud-right">
+      <div class="gold" id="hudGoldWrap" aria-label="Gold"><svg class="coin" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7.2" fill="var(--brass)"/><circle cx="8" cy="8" r="4.6" fill="none" stroke="var(--brass-deep)" stroke-width="1.4"/></svg><span id="hudGold">60</span></div>
+      <span class="stars" aria-label="Reputation" id="hudRepWrap"><span class="s-bg">★★★★★</span><span class="s-fg" id="hudRep">★★★★★</span></span>
+      <button class="icon-btn" id="soundBtn" aria-label="Sound on"></button>
+    </div>
+  </div>
+  <div class="dayline"><i id="hudProg"></i></div>
+</header>
+
+<div id="toasts" aria-live="polite"></div>
+
+<section id="dock" class="sheet" hidden>
+  <div class="sheet-in">
+    <div class="dock-row">
+      <div><span class="eyebrow">Shop open</span><div id="dockText">Waiting for the door bell.</div></div>
+      <div class="count" id="dockCount">0 / 5</div>
+    </div>
+    <p class="rumor" id="dockRumor" hidden></p>
+  </div>
+</section>
+
+<section id="haggle" class="sheet" hidden aria-live="polite">
+  <div class="sheet-in">
+    <div class="hg-top">
+      <div class="who"><span class="eyebrow" id="hgArch">Knight</span><b id="hgName">Ser Aldric</b></div>
+      <div class="pat-wrap"><span class="eyebrow">Patience</span><div class="patience" id="hgPat"></div></div>
+    </div>
+    <p class="quote" id="hgQuote"></p>
+    <p class="coach" id="hgCoach" hidden>Start high, then come down. Every counter-offer is below what they will really pay.</p>
+    <div class="hg-item">
+      <span class="icon" id="hgIcon"></span>
+      <div class="hg-item-text"><b id="hgItem"></b><span id="hgVal"></span></div>
+      <span class="tag" id="hgTag" hidden></span>
+    </div>
+    <p class="read" id="hgRead" hidden></p>
+    <div class="price-row">
+      <button class="step" data-d="-10" aria-label="Lower by 10">−10</button>
+      <button class="step" data-d="-1" aria-label="Lower by 1">−1</button>
+      <div class="price"><output id="hgPrice">0</output><span class="g">g</span><small id="hgMargin"></small></div>
+      <button class="step" data-d="1" aria-label="Raise by 1">+1</button>
+      <button class="step" data-d="10" aria-label="Raise by 10">+10</button>
+    </div>
+    <input type="range" id="hgSlider" aria-label="Price" min="1" max="100" value="40">
+    <div class="hg-actions">
+      <button id="hgRefuse" class="btn ghost">Send away</button>
+      <button id="hgTake" class="btn secondary" hidden>Take</button>
+      <button id="hgOffer" class="btn primary">Ask</button>
+    </div>
+  </div>
+</section>
+
+<section id="night" class="sheet" hidden>
+  <div class="sheet-in">
+    <div class="night-head">
+      <div><span class="eyebrow" id="nightEyebrow">Night</span><h2 id="nightTitle">Day 1 closed</h2></div>
+      <div class="tabs" role="tablist">
+        <button role="tab" data-tab="ledger" id="tab-ledger">Ledger</button>
+        <button role="tab" data-tab="market" id="tab-market">Market</button>
+        <button role="tab" data-tab="workshop" id="tab-workshop">Workshop</button>
+      </div>
+    </div>
+    <div class="night-body" id="nightBody"></div>
+    <button id="openBtn" class="btn primary wide">Open shop</button>
+  </div>
+</section>
+
+<div id="intro" class="overlay">
+  <div class="card">
+    <span class="eyebrow">A curio shop at the crossroads</span>
+    <h1>Hollowmere Curios</h1>
+    <p>Aunt Wren left you her shop, eight shelves of odds and ends, and a standing debt to the Merchants' Guild. Adventurers pass through every day on their way to somewhere worse.</p>
+    <ol>
+      <li>Customers take something off your shelves and bring it to the counter. You name the price.</li>
+      <li>Every counter-offer is less than they will really pay. Push too hard and they storm out.</li>
+      <li>At night, restock from the market and pay your guild dues. Tavern gossip moves tomorrow's prices.</li>
+    </ol>
+    <p class="goal">Reach 2,000 gold to earn the Guild Charter.</p>
+    <p class="err" id="glErr" hidden>Your browser could not start 3D graphics (WebGL), so the shop cannot open here.</p>
+    <div class="card-actions" id="introActions"></div>
+  </div>
+</div>
+
+<div id="modal" class="overlay" hidden>
+  <div class="card">
+    <span class="eyebrow" id="mEyebrow"></span>
+    <h1 id="mTitle"></h1>
+    <p id="mText"></p>
+    <div class="card-actions"><button class="btn primary wide" id="mBtn"></button></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(() => {
+'use strict';
+const $ = s => document.querySelector(s);
+const rnd = (a,b) => a + Math.random()*(b-a);
+const pick = a => a[Math.floor(Math.random()*a.length)];
+const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
+const gauss = () => (Math.random()+Math.random()+Math.random()-1.5)*2;
+const V = (x,y,z) => new THREE.Vector3(x,y,z);
+function wpick(o){ let t=0; for(const k in o) t+=o[k]; if(t<=0) return null; let r=Math.random()*t; for(const k in o){ r-=o[k]; if(r<=0) return k; } return Object.keys(o)[0]; }
+function setText(el, s){ if(el.textContent !== s) el.textContent = s; }
+const art = n => /^[AEIOU]/.test(n) ? 'an '+n : 'a '+n;
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------------- data ---------------- */
+const ITEMS = {
+  potion:{name:'Healing Draught', base:14},
+  elixir:{name:'Mana Elixir', base:22},
+  shield:{name:'Oak Buckler', base:36},
+  sword:{name:'Iron Longsword', base:48},
+  bow:{name:'Yew Bow', base:54},
+  scroll:{name:'Scroll of Fire', base:60},
+  helm:{name:'Dwarven Helm', base:70},
+  gem:{name:'Moonstone', base:95},
+};
+const TYPES = Object.keys(ITEMS);
+
+const ARCH = {
+  knight:{label:'Knight', names:['Ser Aldric','Dame Brisa','Ser Oswin','Dame Ilka'], prefs:{sword:3,shield:3,helm:2,potion:1}, wealth:1.15, patience:3, sell:0.12, body:0x8a96a0, trim:0x7a2632, skin:0xe8b996, hat:'helm'},
+  mage:{label:'Mage', names:['Velloran','Ysolde','Old Marrow','Quill'], prefs:{scroll:3,elixir:3,gem:2,potion:0.5}, wealth:1.2, patience:4, sell:0.12, body:0x4b3a78, trim:0xd8b25a, skin:0xf0cfa8, hat:'cone'},
+  ranger:{label:'Ranger', names:['Fenn','Kesh','Lark','Rowan'], prefs:{bow:3,potion:3,elixir:1,sword:0.5}, wealth:0.95, patience:3, sell:0.18, body:0x456a3e, trim:0x7a5432, skin:0xc99a72, hat:'hood'},
+  farmer:{label:'Farmer', names:['Goodwife Nell','Tam','Petra','Hob'], prefs:{potion:4,shield:1,elixir:0.5}, wealth:0.8, patience:2, sell:0.1, body:0x9a7b4f, trim:0x5b4a33, skin:0xe2a982, hat:'straw'},
+  noble:{label:'Noble', names:['Lady Corvane','Lord Pim','Lady Wisteria'], prefs:{gem:4,helm:1,sword:1,scroll:0.5}, wealth:1.5, patience:2, sell:0.05, body:0x7a2236, trim:0xe0b25a, skin:0xf3d6bd, hat:'crown'},
+  dwarf:{label:'Dwarf', names:['Brann','Hilda Stonebrow','Durgo'], prefs:{helm:3,gem:2,sword:2,shield:1}, wealth:1.1, patience:3, sell:0.15, body:0x6b4a2e, trim:0x8d99a3, skin:0xd99b7a, hat:'dwarf', scale:0.82},
+  goblin:{label:'Goblin peddler', names:['Snikt','Grizzle','Mother Nib'], prefs:{gem:1.6,helm:1,scroll:1.5,bow:1,sword:1,potion:1,elixir:1,shield:1}, wealth:0.8, patience:3, sell:1, body:0x5a4a3a, trim:0x9b3b2f, skin:0x7fae4a, hat:'goblin', scale:0.72},
+};
+const KEEPER = {body:0x2f5a4c, trim:0xc89b4a, skin:0xe6b48f, hat:'keeper'};
+
+const UPGRADES = [
+  {id:'cat', name:'Shop cat', cost:60, desc:'Customers linger to pet her and pay about 5% more.'},
+  {id:'lanterns', name:'Brass sconces', cost:90, desc:'A warmer shop. Every customer gets one more round of patience.'},
+  {id:'loupe', name:"Appraiser's loupe", cost:110, desc:'Read whoever is at the counter: roughly what they will pay, or accept.'},
+  {id:'shelfC', name:'Third shelf', cost:140, desc:'Four more shelf spaces on the back wall.'},
+  {id:'sign', name:'Chalkboard sign', cost:160, desc:'A sign out on the road. Two more customers a day.'},
+  {id:'rackD', name:'Wall rack', cost:240, desc:'Four more shelf spaces by the door.'},
+];
+
+const RUMORS = [
+  {text:'A dragon was seen over the Ashpeaks.', eff:{shield:[1.6,1.25], helm:[1.3,1.1]}},
+  {text:'Fever is spreading through the lowland farms.', eff:{potion:[1.7,1.3]}},
+  {text:"The Mages' Collegium sits its exams this week.", eff:{scroll:[1.5,1.15], elixir:[1.3,1.1]}},
+  {text:'Dwarves struck a fresh moonstone vein.', eff:{gem:[0.72,0.55]}},
+  {text:'The Duke is raising levies for the border.', eff:{sword:[1.5,1.2], shield:[1.2,1.1]}},
+  {text:'Hunting season opens in the Greywood.', eff:{bow:[1.6,1.15]}},
+  {text:'A caravan of coastal swords flooded the market.', eff:{sword:[0.85,0.6]}},
+  {text:'A noble wedding is planned in Hollowmere.', eff:{gem:[1.55,1.15]}},
+  {text:'The herbalists overbrewed. Draughts are everywhere.', eff:{potion:[0.8,0.6]}},
+  {text:'The ley lines are restless and mana runs thin.', eff:{elixir:[1.6,1.3]}},
+  {text:'The Larkspur smithy burned down.', eff:{helm:[1.35,1.3], sword:[1.1,1.3]}},
+  {text:"The scribes' guild is on strike.", eff:{scroll:[1.25,1.5]}},
+  {text:'Bowyers from the south are undercutting everyone.', eff:{bow:[0.9,0.6]}},
+];
+
+const LINES = {
+  open:{
+    knight:['This {item} will serve. Name your price.','A fine {item}. What do you ask for it?'],
+    mage:['The {item}. Adequate. Your price?','I require this {item}. How much?'],
+    ranger:['How much for the {item}?','I need this {item} before dark. Price?'],
+    farmer:["Is the {item} very dear? I haven't much.",'How much for this {item}, please?'],
+    noble:['I suppose this {item} will do. Price?','Wrap the {item}. What is the damage?'],
+    dwarf:['Hm. Decent {item}. How much?','Give me your price on this {item}.'],
+  },
+  sellOpen:['Found this {item} in a barrow. What will you give me?','I need coin more than this {item}. Make me an offer.'],
+  sellGoblin:['Shiny {item}! Fell off a wagon. You buy, yes?','Good {item}, barely cursed. Offer, offer!'],
+  counter:['Too rich for me. {c}g?','I could do {c}g.','How about {c}g?',"{c}g, and I'll tell my friends."],
+  insult:["Do I look like a dragon's hoard? {c}g.",'Robbery! {c}g at most.'],
+  sellCounter:['Bah. {c}g at least.','I want {c}g for it.',"{c}g and it's yours."],
+  sellInsult:['An insult! {c}g or I walk.','You jest. {c}g.'],
+  warn:['My patience wears thin.','Last chance.',"Don't push me."],
+};
+const fill = (s,t,c) => s.replace('{item}', ITEMS[t].name).replace('{c}', c);
+
+/* ---------------- state ---------------- */
+const KEY = 'hollowmere-curios-v1';
+let S = null;
+function newState(){
+  const s = {v:1, day:1, gold:60, rep:1, slots:Array(16).fill(null), upgrades:{}, market:{}, rumors:[], next:null, nextRumors:[], debtNights:0, won:false, lastLedger:null, today:null, totals:{sales:0,revenue:0,best:0}, phase:'day'};
+  for(const t of TYPES) s.market[t] = {w:1, d:1};
+  ['potion','potion','elixir','shield','potion','elixir','sword','scroll'].forEach((t,i)=> s.slots[i] = {type:t, cost:Math.round(ITEMS[t].base*0.6)});
+  return s;
+}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
+function loadSave(){ try{ const raw = localStorage.getItem(KEY); if(!raw) return null; const s = JSON.parse(raw); return (s && s.v===1 && s.next) ? s : null; }catch(e){ return null; } }
+function clearSave(){ try{ localStorage.removeItem(KEY); }catch(e){} }
+
+const fair = t => Math.max(1, Math.round(ITEMS[t].base * ((S.market[t] && S.market[t].d) || 1)));
+const wholesale = t => Math.max(1, Math.round(ITEMS[t].base * 0.62 * ((S.next ? S.next[t].w : S.market[t].w))));
+const unlocked = i => i < 8 ? true : i < 12 ? !!S.upgrades.shelfC : !!S.upgrades.rackD;
+const capacity = () => 8 + (S.upgrades.shelfC?4:0) + (S.upgrades.rackD?4:0);
+function freeSlot(){ for(let i=0;i<16;i++) if(unlocked(i) && !S.slots[i]) return i; return -1; }
+function freeCount(){ let n=0; for(let i=0;i<16;i++) if(unlocked(i) && !S.slots[i]) n++; return n; }
+function stockOf(t){ let n=0; for(let i=0;i<16;i++) if(unlocked(i) && S.slots[i] && S.slots[i].type===t) n++; return n; }
+
+const R = { customers:[], counter:null, wait:null, spawned:0, total:0, done:0, nextSpawn:0, haggle:null, time:0, mode:'room', ending:false, timers:[], reserved:Array(16).fill(false), slotMesh:Array(16).fill(null), coins:[], lightProg:0.15, nightK:0, counterItem:null, firstHaggles:0 };
+function later(t, fn){ R.timers.push({t, fn}); }
+
+/* ---------------- audio ---------------- */
+let AC = null, soundOn = true;
+try{ soundOn = localStorage.getItem('hollowmere-sound') !== 'off'; }catch(e){}
+function audio(){ if(!AC){ try{ AC = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){ AC=null; } } if(AC && AC.state==='suspended') AC.resume().catch(()=>{}); return AC; }
+function tone(f, dur, type, vol, delay, slide){
+  if(!soundOn) return; const ac = audio(); if(!ac) return;
+  const t0 = ac.currentTime + (delay||0); const o = ac.createOscillator(); const g = ac.createGain();
+  o.type = type||'sine'; o.frequency.setValueAtTime(f, t0); if(slide) o.frequency.exponentialRampToValueAtTime(slide, t0+dur);
+  g.gain.setValueAtTime(0.0001, t0); g.gain.exponentialRampToValueAtTime(vol||0.08, t0+0.012); g.gain.exponentialRampToValueAtTime(0.0001, t0+dur);
+  o.connect(g); g.connect(ac.destination); o.start(t0); o.stop(t0+dur+0.03);
+}
+const SFX = {
+  coin(){ tone(1568,0.18,'triangle',0.08); tone(2093,0.4,'triangle',0.06,0.08); },
+  bell(){ tone(1046,0.9,'sine',0.05); tone(1568,0.7,'sine',0.03,0.01); tone(1046,0.6,'sine',0.035,0.2); },
+  bad(){ tone(196,0.34,'sawtooth',0.03,0,110); },
+  click(){ tone(760,0.04,'square',0.015); },
+  pop(){ tone(420,0.13,'sine',0.07,0,860); },
+  hmm(){ tone(330,0.16,'triangle',0.035,0,270); },
+};
+function sfx(n){ try{ SFX[n] && SFX[n](); }catch(e){} }
+const ICON_ON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7"/><path d="M19 6a8.5 8.5 0 0 1 0 12"/></svg>';
+const ICON_OFF = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M17 9l5 6M22 9l-5 6"/></svg>';
+function paintSound(){ const b=$('#soundBtn'); b.innerHTML = soundOn?ICON_ON:ICON_OFF; b.setAttribute('aria-label', soundOn?'Sound on':'Sound off'); }
+
+/* ---------------- three.js helpers ---------------- */
+let renderer, scene, camera, clock, fitCam;
+const matCache = new Map();
+function mat(color, o){ o=o||{}; const key = color+'|'+JSON.stringify(o); let m = matCache.get(key); if(!m){ m = new THREE.MeshStandardMaterial(Object.assign({color, roughness:0.82, metalness:0, flatShading:true}, o)); matCache.set(key,m); } return m; }
+function mesh(geo, m, x, y, z){ const o = new THREE.Mesh(geo, m); o.position.set(x||0, y||0, z||0); return o; }
+
+function buildItem(type){
+  const g = new THREE.Group();
+  const glass = mat(0xd5e4e2,{roughness:0.15});
+  const cork = mat(0x8a5a33);
+  const metal = mat(0xb9c2c8,{metalness:0.75,roughness:0.32});
+  const brass = mat(0xd6a548,{metalness:0.7,roughness:0.35});
+  const wood = mat(0x8b5a2b);
+  const dark = mat(0x4a2f1c);
+  if(type==='potion'){
+    g.add(mesh(new THREE.SphereGeometry(0.13,10,8), mat(0xcf2f3a,{roughness:0.25,emissive:0x4a0710}),0,0.13,0));
+    g.add(mesh(new THREE.CylinderGeometry(0.04,0.05,0.09,8), glass,0,0.28,0));
+    g.add(mesh(new THREE.CylinderGeometry(0.048,0.042,0.05,8), cork,0,0.345,0));
+  } else if(type==='elixir'){
+    g.add(mesh(new THREE.CylinderGeometry(0.06,0.105,0.26,8), mat(0x3a6ee8,{roughness:0.25,emissive:0x0b1c5c}),0,0.13,0));
+    g.add(mesh(new THREE.CylinderGeometry(0.03,0.04,0.07,8), glass,0,0.295,0));
+    g.add(mesh(new THREE.SphereGeometry(0.045,8,6), cork,0,0.35,0));
+  } else if(type==='sword'){
+    const s = new THREE.Group();
+    s.add(mesh(new THREE.SphereGeometry(0.03,8,6), brass,0,0.02,0));
+    s.add(mesh(new THREE.CylinderGeometry(0.02,0.022,0.1,6), mat(0x5a3420),0,0.085,0));
+    s.add(mesh(new THREE.BoxGeometry(0.19,0.032,0.045), brass,0,0.15,0));
+    s.add(mesh(new THREE.BoxGeometry(0.05,0.34,0.016), metal,0,0.335,0));
+    const tip = mesh(new THREE.ConeGeometry(0.036,0.07,4), metal,0,0.54,0); tip.scale.z=0.35; s.add(tip);
+    s.rotation.z = 0.16; g.add(s);
+  } else if(type==='shield'){
+    const s = new THREE.Group(); s.position.y=0.19; s.rotation.x=-0.18;
+    const disc = mesh(new THREE.CylinderGeometry(0.18,0.18,0.035,14), wood); disc.rotation.x=Math.PI/2; s.add(disc);
+    s.add(mesh(new THREE.TorusGeometry(0.18,0.016,5,18), metal));
+    s.add(mesh(new THREE.SphereGeometry(0.05,8,6), brass,0,0,0.025));
+    s.add(mesh(new THREE.BoxGeometry(0.008,0.32,0.004), dark,-0.07,0,0.019));
+    s.add(mesh(new THREE.BoxGeometry(0.008,0.32,0.004), dark,0.07,0,0.019));
+    g.add(s);
+  } else if(type==='scroll'){
+    const s = new THREE.Group(); s.position.y=0.06;
+    const roll = mesh(new THREE.CylinderGeometry(0.055,0.055,0.28,10), mat(0xe9dbb3)); roll.rotation.z=Math.PI/2; s.add(roll);
+    for(const x of [-0.155,0.155]){ const cap = mesh(new THREE.CylinderGeometry(0.03,0.03,0.04,8), dark,x,0,0); cap.rotation.z=Math.PI/2; s.add(cap); }
+    const rib = mesh(new THREE.TorusGeometry(0.058,0.012,5,12), mat(0xb3262e)); rib.rotation.y=Math.PI/2; s.add(rib);
+    s.add(mesh(new THREE.SphereGeometry(0.028,6,5), mat(0xb3262e),0,0,0.06));
+    g.add(s);
+  } else if(type==='bow'){
+    const s = new THREE.Group(); s.position.y=0.23;
+    const arc = mesh(new THREE.TorusGeometry(0.2,0.016,5,16,Math.PI), mat(0xa0652d)); arc.rotation.z=-Math.PI/2; arc.position.x=-0.07; s.add(arc);
+    s.add(mesh(new THREE.CylinderGeometry(0.004,0.004,0.4,4), mat(0xeee6cf),-0.07,0,0));
+    s.add(mesh(new THREE.CylinderGeometry(0.024,0.024,0.08,6), mat(0x5a3420),0.13,0,0));
+    s.rotation.y = 0.3; g.add(s);
+  } else if(type==='helm'){
+    g.add(mesh(new THREE.SphereGeometry(0.14,10,6,0,Math.PI*2,0,Math.PI/2), metal,0,0.05,0));
+    g.add(mesh(new THREE.CylinderGeometry(0.145,0.145,0.05,12), brass,0,0.05,0));
+    for(const sx of [-1,1]){ const h = mesh(new THREE.ConeGeometry(0.03,0.17,6), mat(0xe8dcc0),sx*0.15,0.14,0); h.rotation.z=-sx*0.85; g.add(h); }
+    g.add(mesh(new THREE.BoxGeometry(0.025,0.07,0.02), metal,0,0.05,0.145));
+  } else if(type==='gem'){
+    g.add(mesh(new THREE.CylinderGeometry(0.07,0.09,0.06,8), dark,0,0.03,0));
+    const gem = mesh(new THREE.OctahedronGeometry(0.1,0), mat(0xa9b8ff,{roughness:0.12,metalness:0.2,emissive:0x2c3aa0})); gem.position.y=0.21; gem.scale.y=1.35; g.add(gem); g.userData.spin = gem;
+  }
+  g.traverse(o => { if(o.isMesh) o.castShadow = true; });
+  return g;
+}
+
+const ICONS = {};
+function makeIcons(){
+  let r; try{ r = new THREE.WebGLRenderer({alpha:true, antialias:true, preserveDrawingBuffer:true}); }catch(e){ return; }
+  r.setPixelRatio(1); r.setSize(128,128); r.setClearColor(0x000000,0);
+  const sc = new THREE.Scene(); sc.add(new THREE.HemisphereLight(0xfff1d6,0x3a2a1a,0.95)); const dl = new THREE.DirectionalLight(0xffffff,0.85); dl.position.set(2,3,4); sc.add(dl);
+  const cam = new THREE.PerspectiveCamera(30,1,0.01,20);
+  for(const t of TYPES){
+    const it = buildItem(t); sc.add(it);
+    const box = new THREE.Box3().setFromObject(it); const c = box.getCenter(new THREE.Vector3()); const sz = box.getSize(new THREE.Vector3()).length();
+    cam.position.set(c.x+sz*0.75, c.y+sz*0.6, c.z+sz*1.75); cam.lookAt(c);
+    r.render(sc, cam); ICONS[t] = r.domElement.toDataURL(); sc.remove(it);
+  }
+  r.dispose(); try{ r.forceContextLoss(); }catch(e){}
+}
+const iconHTML = t => ICONS[t] ? `<img src="${ICONS[t]}" alt="">` : '';
+
+/* ---------------- textures ---------------- */
+function canvasTex(w,h,draw){ const c=document.createElement('canvas'); c.width=w; c.height=h; draw(c.getContext('2d'),w,h); const t=new THREE.CanvasTexture(c); t.anisotropy=4; return t; }
+function texPlanks(){
+  const t = canvasTex(512,512,(x,W,H)=>{
+    const rows=8, h=H/rows;
+    for(let r=0;r<rows;r++){
+      let xo = -Math.random()*120;
+      while(xo<W){
+        const w = 150+Math.random()*150, l = Math.random()*14-7;
+        x.fillStyle = `hsl(${26+Math.random()*6},${36+Math.random()*8}%,${33+l}%)`; x.fillRect(xo,r*h,w,h);
+        x.strokeStyle='rgba(40,20,8,0.16)'; x.lineWidth=1.2;
+        for(let g=0;g<5;g++){ const yy=r*h+5+Math.random()*(h-10); x.beginPath(); x.moveTo(xo,yy); x.bezierCurveTo(xo+w*0.3,yy+rnd(-4,4),xo+w*0.7,yy+rnd(-4,4),xo+w,yy); x.stroke(); }
+        x.fillStyle='rgba(18,9,3,0.55)'; x.fillRect(xo,r*h,2,h);
+        x.fillStyle='rgba(25,15,8,0.6)'; x.fillRect(xo+6,r*h+8,3,3); x.fillRect(xo+6,r*h+h-11,3,3);
+        xo += w;
+      }
+      x.fillStyle='rgba(14,7,2,0.6)'; x.fillRect(0,r*h,W,2);
+    }
+  });
+  t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(2.4,1.7); return t;
+}
+function texPlaster(){
+  return canvasTex(256,256,(x,W,H)=>{
+    x.fillStyle='#cfc6ad'; x.fillRect(0,0,W,H);
+    for(let i=0;i<2600;i++){ x.fillStyle = Math.random()<0.5 ? 'rgba(255,250,235,0.07)' : 'rgba(80,60,40,0.06)'; x.fillRect(Math.random()*W,Math.random()*H,2+Math.random()*3,2+Math.random()*3); }
+    for(let p=0;p<3;p++){ const bx=Math.random()*W, by=Math.random()*H;
+      for(let j=0;j<5;j++) for(let k=0;k<3;k++){ if(Math.random()<0.3) continue; x.fillStyle=`hsl(14,${30+Math.random()*10}%,${38+Math.random()*8}%)`; x.fillRect(bx+k*16+(j%2)*8, by+j*8, 14, 6); } }
+  });
+}
+function texCobble(){
+  const t = canvasTex(256,256,(x,W,H)=>{
+    x.fillStyle='#3d4440'; x.fillRect(0,0,W,H);
+    for(let i=0;i<130;i++){ const cx=Math.random()*W, cy=Math.random()*H, r=8+Math.random()*10; x.fillStyle=`hsl(150,${4+Math.random()*6}%,${30+Math.random()*12}%)`; x.beginPath(); x.ellipse(cx,cy,r,r*0.8,Math.random()*3,0,Math.PI*2); x.fill(); }
+  });
+  t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(1.5,3.6); return t;
+}
+function texRug(){
+  return canvasTex(256,180,(x,W,H)=>{
+    x.fillStyle='#7c2a2c'; x.fillRect(0,0,W,H);
+    x.strokeStyle='#d6a85a'; x.lineWidth=6; x.strokeRect(12,12,W-24,H-24);
+    x.strokeStyle='#2e4a44'; x.lineWidth=10; x.strokeRect(26,26,W-52,H-52);
+    x.fillStyle='#d6a85a';
+    for(let i=0;i<5;i++){ const cx=W/2+(i-2)*34, cy=H/2; x.beginPath(); x.moveTo(cx,cy-18); x.lineTo(cx+12,cy); x.lineTo(cx,cy+18); x.lineTo(cx-12,cy); x.closePath(); x.fill(); }
+    x.fillStyle='rgba(0,0,0,0.12)'; for(let i=0;i<500;i++) x.fillRect(Math.random()*W,Math.random()*H,2,2);
+  });
+}
+let signTex, chalkTex;
+function drawSign(){
+  const c = signTex.image, x = c.getContext('2d'), W=c.width, H=c.height;
+  x.fillStyle='#1f3a32'; x.fillRect(0,0,W,H);
+  x.strokeStyle='#d6a548'; x.lineWidth=6; x.strokeRect(8,8,W-16,H-16);
+  x.fillStyle='#e3b55e'; x.textAlign='center'; x.textBaseline='middle';
+  x.font='64px "IM Fell English SC", Georgia, serif'; x.fillText('Hollowmere Curios', W/2, H/2+4);
+  signTex.needsUpdate = true;
+}
+function drawChalk(){
+  const c = chalkTex.image, x = c.getContext('2d'), W=c.width, H=c.height;
+  x.fillStyle='#1d2622'; x.fillRect(0,0,W,H);
+  x.strokeStyle='#7a5432'; x.lineWidth=14; x.strokeRect(0,0,W,H);
+  x.fillStyle='#efe9da'; x.textAlign='center'; x.textBaseline='middle';
+  x.font='40px "IM Fell English SC", Georgia, serif';
+  x.fillText('Curios', W/2, 60); x.font='28px "IM Fell English SC", Georgia, serif'; x.fillText('fair prices', W/2, 118); x.fillText('rare finds', W/2, 158);
+  chalkTex.needsUpdate = true;
+}
+
+/* ---------------- scene ---------------- */
+const SLOTS = [];
+const unitGroups = {};
+let hemi, sun, counterLight, counterGlow, sconces=[], streetLight, streetGlow, skyMat, dust, chalk, loupe, keeper, cat;
+const UNITS = { A:{pos:[-3.6,0,-3.75],rot:0}, B:{pos:[-1.2,0,-3.75],rot:0}, C:{pos:[1.2,0,-3.75],rot:0}, D:{pos:[-4.75,0,-1.2],rot:Math.PI/2} };
+const SLOT_LOCAL = [[-0.5,0.825],[0.5,0.825],[-0.5,1.525],[0.5,1.525]];
+const COUNTER_SPOT = V(2.15,0,-0.4), WAIT_SPOT = V(1.0,0,1.2), DOOR_IN = V(-4.2,0,2.0), DOOR_OUT = V(-6.2,0,2.0), STREET = V(-7.3,0,4.5);
+const COUNTER_TOP = V(2.86,0.93,-0.4);
+
+function makeShelfUnit(){
+  const g = new THREE.Group(); const w = mat(0x6e4427), d = mat(0x4a2d1a);
+  const add = (geo,m,x,y,z) => { const o = mesh(geo,m,x,y,z); o.castShadow=true; o.receiveShadow=true; g.add(o); return o; };
+  add(new THREE.BoxGeometry(0.08,2.2,0.5), d,-0.98,1.1,0);
+  add(new THREE.BoxGeometry(0.08,2.2,0.5), d,0.98,1.1,0);
+  add(new THREE.BoxGeometry(2.0,2.2,0.04), w,0,1.1,-0.23);
+  for(const y of [0.12,0.8,1.5,2.16]) add(new THREE.BoxGeometry(1.92,0.05,0.48), w,0,y,0);
+  add(new THREE.BoxGeometry(2.12,0.08,0.56), d,0,2.22,0.02);
+  add(new THREE.BoxGeometry(0.55,0.42,0.36), mat(0x8d6a42),-0.45,0.355,0.02);
+  add(new THREE.BoxGeometry(0.57,0.04,0.38), d,-0.45,0.57,0.02);
+  add(new THREE.CylinderGeometry(0.11,0.13,0.3,8), mat(0x5b7a6a),0.3,0.3,0);
+  add(new THREE.CylinderGeometry(0.09,0.1,0.24,8), mat(0x8a5f3e),0.62,0.27,0.02);
+  return g;
+}
+function makeLantern(){
+  const g = new THREE.Group(); const iron = mat(0x2a2a2a,{metalness:0.5,roughness:0.6});
+  g.add(mesh(new THREE.ConeGeometry(0.11,0.09,4), iron,0,0.22,0));
+  const glowM = new THREE.MeshStandardMaterial({color:0xffd08a, emissive:0xffa63d, emissiveIntensity:1.1, roughness:0.5});
+  const glow = mesh(new THREE.BoxGeometry(0.13,0.17,0.13), glowM,0,0.085,0); g.add(glow);
+  g.add(mesh(new THREE.BoxGeometry(0.17,0.025,0.17), iron,0,-0.01,0));
+  for(const [x,z] of [[-0.075,-0.075],[0.075,-0.075],[-0.075,0.075],[0.075,0.075]]) g.add(mesh(new THREE.BoxGeometry(0.018,0.18,0.018), iron,x,0.085,z));
+  g.add(mesh(new THREE.TorusGeometry(0.04,0.008,4,8), iron,0,0.29,0));
+  return {g, glow:glowM};
+}
+function makeCharacter(a){
+  const g = new THREE.Group(), w = new THREE.Group(); g.add(w);
+  const bodyM = mat(a.body), trimM = mat(a.trim), skinM = mat(a.skin);
+  w.add(mesh(new THREE.CylinderGeometry(0.19,0.29,0.7,8), bodyM,0,0.35,0));
+  w.add(mesh(new THREE.CylinderGeometry(0.235,0.242,0.07,8), trimM,0,0.47,0));
+  w.add(mesh(new THREE.SphereGeometry(0.17,10,8), skinM,0,0.86,0));
+  const eyeM = mat(0x1b1410);
+  for(const s of [-1,1]) w.add(mesh(new THREE.SphereGeometry(0.024,6,4), eyeM,s*0.062,0.89,0.152));
+  const arms = [];
+  for(const s of [-1,1]){
+    const p = new THREE.Group(); p.position.set(s*0.235,0.64,0);
+    const arm = mesh(new THREE.CylinderGeometry(0.05,0.045,0.36,6), bodyM,0,-0.17,0); arm.rotation.z = s*0.12; p.add(arm);
+    p.add(mesh(new THREE.SphereGeometry(0.05,6,5), skinM,s*0.02,-0.36,0));
+    w.add(p); arms.push(p);
+  }
+  const gold = mat(0xe0b25a,{metalness:0.7,roughness:0.3});
+  const steel = mat(0xaab3b9,{metalness:0.6,roughness:0.4});
+  switch(a.hat){
+    case 'helm': w.add(mesh(new THREE.SphereGeometry(0.19,10,6,0,Math.PI*2,0,Math.PI/2), steel,0,0.88,0)); w.add(mesh(new THREE.BoxGeometry(0.035,0.14,0.24), trimM,0,1.1,-0.02)); break;
+    case 'cone': { w.add(mesh(new THREE.CylinderGeometry(0.3,0.3,0.03,14), bodyM,0,0.98,0)); const c = mesh(new THREE.ConeGeometry(0.19,0.5,8), bodyM,0,1.24,0); c.rotation.z=0.15; w.add(c); w.add(mesh(new THREE.CylinderGeometry(0.195,0.2,0.05,8), trimM,0,1.01,0)); break; }
+    case 'hood': { const h = mesh(new THREE.SphereGeometry(0.2,10,8,0,Math.PI*2,0,Math.PI*0.55), bodyM,0,0.86,-0.02); h.rotation.x=-0.5; w.add(h); break; }
+    case 'straw': { const sm = mat(0xd9c27a); w.add(mesh(new THREE.CylinderGeometry(0.34,0.36,0.03,14), sm,0,1.0,0)); w.add(mesh(new THREE.CylinderGeometry(0.15,0.18,0.13,10), sm,0,1.07,0)); w.add(mesh(new THREE.CylinderGeometry(0.184,0.184,0.04,10), trimM,0,1.03,0)); break; }
+    case 'crown': { w.add(mesh(new THREE.SphereGeometry(0.176,10,8,0,Math.PI*2,0,Math.PI*0.45), mat(0x2a1a14),0,0.87,-0.01)); w.add(mesh(new THREE.CylinderGeometry(0.13,0.13,0.07,8), gold,0,1.04,0)); for(let i=0;i<5;i++){ const an=i/5*Math.PI*2; w.add(mesh(new THREE.ConeGeometry(0.025,0.07,4), gold,Math.sin(an)*0.12,1.1,Math.cos(an)*0.12)); } break; }
+    case 'dwarf': { const b = mesh(new THREE.ConeGeometry(0.15,0.34,8), mat(0xb5652d),0,0.66,0.1); b.rotation.x=Math.PI; w.add(b); w.add(mesh(new THREE.SphereGeometry(0.185,10,6,0,Math.PI*2,0,Math.PI/2), steel,0,0.9,0)); break; }
+    case 'goblin': { for(const s of [-1,1]){ const e = mesh(new THREE.ConeGeometry(0.05,0.24,4), skinM,s*0.2,0.92,0); e.rotation.z=-s*1.25; w.add(e); } const n = mesh(new THREE.ConeGeometry(0.04,0.12,5), skinM,0,0.86,0.2); n.rotation.x=Math.PI/2; w.add(n); w.add(mesh(new THREE.SphereGeometry(0.2,8,6), mat(0x8a6a44),0,0.5,-0.27)); w.add(mesh(new THREE.ConeGeometry(0.16,0.22,8), trimM,0,1.06,0)); break; }
+    case 'keeper': { const hair = mat(0x6b3f22); w.add(mesh(new THREE.SphereGeometry(0.178,10,8,0,Math.PI*2,0,Math.PI*0.5), hair,0,0.87,-0.01)); w.add(mesh(new THREE.SphereGeometry(0.09,8,6), hair,0,1.04,-0.1)); w.add(mesh(new THREE.BoxGeometry(0.34,0.46,0.05), mat(0xe8dcc0),0,0.4,0.235)); break; }
+  }
+  const carry = new THREE.Group(); carry.position.set(0,0.4,0.32); w.add(carry);
+  w.traverse(o => { if(o.isMesh) o.castShadow = true; });
+  return {g, w, armL:arms[0], armR:arms[1], carry};
+}
+function makeCat(){
+  const g = new THREE.Group(); const m = mat(0xd9893b), d = mat(0x8a4f1e);
+  const body = mesh(new THREE.BoxGeometry(0.16,0.15,0.36), m,0,0.15,0); g.add(body);
+  const head = new THREE.Group(); head.position.set(0,0.26,0.2); g.add(head);
+  head.add(mesh(new THREE.BoxGeometry(0.17,0.14,0.14), m));
+  for(const s of [-1,1]){ head.add(mesh(new THREE.ConeGeometry(0.035,0.07,4), d,s*0.05,0.1,0)); head.add(mesh(new THREE.SphereGeometry(0.016,5,4), mat(0x9bd35a,{emissive:0x2a4a10}),s*0.04,0.01,0.07)); }
+  for(const [x,z] of [[-0.05,0.12],[0.05,0.12],[-0.05,-0.12],[0.05,-0.12]]) g.add(mesh(new THREE.BoxGeometry(0.04,0.1,0.04), d,x,0.05,z));
+  const tail = new THREE.Group(); tail.position.set(0,0.2,-0.17); tail.add(mesh(new THREE.CylinderGeometry(0.018,0.025,0.26,5), d,0,0.12,0)); tail.rotation.x=-0.6; g.add(tail);
+  g.traverse(o => { if(o.isMesh) o.castShadow = true; });
+  g.position.set(-1.2,0,0.6);
+  return {g, tail, head, body, target:null, sitT:2, faceY:0, t:0};
+}
+
+function buildScene(){
+  scene = new THREE.Scene(); scene.background = new THREE.Color(0x1e2b2a);
+  hemi = new THREE.HemisphereLight(0xc7dde4, 0x5a4632, 0.55); scene.add(hemi);
+  scene.add(new THREE.AmbientLight(0xffffff, 0.12));
+  sun = new THREE.DirectionalLight(0xfff1dc, 0.95); sun.position.set(6,10,7); sun.target.position.set(0,0,-1); scene.add(sun.target);
+  sun.castShadow = true; sun.shadow.mapSize.set(1024,1024); const sc = sun.shadow.camera; sc.left=-8; sc.right=8; sc.top=8; sc.bottom=-8; sc.near=1; sc.far=34; sun.shadow.bias=-0.0006; scene.add(sun);
+
+  const side = mat(0x2a1c13), earth = mat(0x1d2621);
+  const floorM = new THREE.MeshStandardMaterial({map:texPlanks(), roughness:0.92});
+  const base = new THREE.Mesh(new THREE.BoxGeometry(10.4,0.4,7.2), [side,side,floorM,side,side,side]); base.position.set(0,-0.2,-0.6); base.receiveShadow=true; scene.add(base);
+  const cobM = new THREE.MeshStandardMaterial({map:texCobble(), roughness:1});
+  const street = new THREE.Mesh(new THREE.BoxGeometry(3.6,0.36,9.4), [earth,earth,cobM,earth,earth,earth]); street.position.set(-7.0,-0.2,0.5); street.receiveShadow=true; scene.add(street);
+
+  const plaster = new THREE.MeshStandardMaterial({map:texPlaster(), roughness:0.95});
+  const wall = (w,h,d,x,y,z) => { const m = new THREE.Mesh(new THREE.BoxGeometry(w,h,d), plaster); m.position.set(x,y,z); m.receiveShadow=true; scene.add(m); };
+  wall(10.4,3.2,0.2, 0,1.6,-4.1);
+  wall(0.2,3.2,5.65, -5.1,1.6,-1.375);
+  wall(0.2,3.2,0.45, -5.1,1.6,2.775);
+  wall(0.2,1.05,1.1, -5.1,2.675,2.0);
+  const timber = mat(0x47301f);
+  const beam = (w,h,d,x,y,z) => { const m = mesh(new THREE.BoxGeometry(w,h,d), timber,x,y,z); m.receiveShadow=true; scene.add(m); };
+  for(const x of [-4.92,-2.4,0,2.45,5.12]) beam(0.16,3.2,0.1, x,1.6,-3.97);
+  beam(10.3,0.18,0.1, 0,3.1,-3.96); beam(10.3,0.12,0.08, 0,2.4,-3.97);
+  for(const z of [-2.2,1.36,2.64]) beam(0.1,3.2,0.16, -4.97,1.6,z);
+  beam(0.08,0.18,7.0, -4.97,3.1,-0.6);
+  beam(0.26,0.16,1.4, -5.1,2.2,2.0);
+
+  // door leaf, swung outward
+  const pivot = new THREE.Group(); pivot.position.set(-5.2,0,1.45); pivot.rotation.y=-1.2; scene.add(pivot);
+  const leaf = mesh(new THREE.BoxGeometry(0.07,2.05,1.05), mat(0x6a4226),0,1.03,0.525); leaf.castShadow=true; pivot.add(leaf);
+  for(const y of [0.45,1.6]) pivot.add(mesh(new THREE.BoxGeometry(0.09,0.07,1.0), mat(0x2b2b2b,{metalness:0.5}),0,y,0.525));
+
+  // window + sign on back wall
+  skyMat = new THREE.MeshBasicMaterial({color:0xbfe0ee});
+  const glassP = mesh(new THREE.PlaneGeometry(1.0,0.8), skyMat,3.85,1.85,-3.994); scene.add(glassP);
+  const fr = (w,h,x,y) => scene.add(mesh(new THREE.BoxGeometry(w,h,0.1), timber,x,y,-3.95));
+  fr(1.2,0.1,3.85,2.3); fr(1.2,0.1,3.85,1.4); fr(0.1,0.9,3.3,1.85); fr(0.1,0.9,4.4,1.85); fr(0.04,0.8,3.85,1.85); fr(1.0,0.04,3.85,1.85);
+  scene.add(mesh(new THREE.BoxGeometry(1.3,0.06,0.22), timber,3.85,1.35,-3.9));
+  signTex = canvasTex(768,192,()=>{}); drawSign();
+  scene.add(mesh(new THREE.BoxGeometry(1.95,0.52,0.05), timber,3.82,2.78,-3.965));
+  scene.add(mesh(new THREE.PlaneGeometry(1.85,0.46), new THREE.MeshStandardMaterial({map:signTex, roughness:0.7}),3.82,2.78,-3.938));
+
+  // shelf units
+  for(const [ui,k] of ['A','B','C','D'].entries()){
+    const u = makeShelfUnit(); u.position.set(...UNITS[k].pos); u.rotation.y = UNITS[k].rot; scene.add(u); unitGroups[k] = u; u.updateMatrixWorld(true);
+    SLOT_LOCAL.forEach(([x,y],j) => {
+      SLOTS[ui*4+j] = { pos: V(x,y,0.02).applyMatrix4(u.matrixWorld), stand: V(x,0,1.2).applyMatrix4(u.matrixWorld), rot: UNITS[k].rot };
+    });
+  }
+
+  // counter
+  const wood = mat(0x7a4c2b), dark = mat(0x4b2f1d);
+  const cb = mesh(new THREE.BoxGeometry(0.7,0.86,3.2), wood,3.0,0.43,-0.6); cb.castShadow=cb.receiveShadow=true; scene.add(cb);
+  for(const z of [-1.9,-1.0,-0.1,0.8]) scene.add(mesh(new THREE.BoxGeometry(0.03,0.6,0.7), dark,2.64,0.45,z));
+  const top = mesh(new THREE.BoxGeometry(0.88,0.07,3.38), dark,3.0,0.895,-0.6); top.castShadow=top.receiveShadow=true; scene.add(top);
+  const book = new THREE.Group(); book.position.set(3.12,0.93,0.55); book.rotation.y=0.35; scene.add(book);
+  book.add(mesh(new THREE.BoxGeometry(0.42,0.04,0.32), mat(0x6b2430))); book.add(mesh(new THREE.BoxGeometry(0.4,0.03,0.3), mat(0xece0c0),0,0.03,0));
+  scene.add(mesh(new THREE.CylinderGeometry(0.035,0.04,0.16,8), mat(0xefe6d0),3.15,1.01,-1.75));
+  scene.add(mesh(new THREE.SphereGeometry(0.025,6,5), new THREE.MeshBasicMaterial({color:0xffc060}),3.15,1.11,-1.75));
+  // brass scale
+  const scl = new THREE.Group(); scl.position.set(3.15,0.93,-1.2); scene.add(scl);
+  const br = mat(0xd6a548,{metalness:0.7,roughness:0.35});
+  scl.add(mesh(new THREE.CylinderGeometry(0.06,0.08,0.03,8), br,0,0.015,0)); scl.add(mesh(new THREE.CylinderGeometry(0.012,0.012,0.3,6), br,0,0.16,0)); scl.add(mesh(new THREE.BoxGeometry(0.02,0.015,0.36), br,0,0.3,0));
+  for(const z of [-0.17,0.17]) scl.add(mesh(new THREE.CylinderGeometry(0.07,0.05,0.02,10), br,0,0.22,z));
+  const cl = makeLantern(); cl.g.position.set(3.15,0.93,0.05); scene.add(cl.g); counterGlow = cl.glow;
+  counterLight = new THREE.PointLight(0xffb560, 0.7, 7, 1.4); counterLight.position.set(3.0,1.55,0.05); scene.add(counterLight);
+
+  // sconces (upgrade)
+  for(const [x,y,z,ry] of [[-2.4,2.42,-3.82,0],[0,2.42,-3.82,0],[-4.82,2.42,0.4,Math.PI/2]]){
+    const L = makeLantern(); const g = new THREE.Group(); g.position.set(x,y,z); g.rotation.y = ry; g.add(L.g); L.g.position.set(0,-0.15,0.06);
+    g.add(mesh(new THREE.BoxGeometry(0.03,0.03,0.2), mat(0x2a2a2a),0,0.12,-0.04));
+    scene.add(g);
+    const pl = new THREE.PointLight(0xffb05a, 0, 6, 1.5); pl.position.set(x + (ry?0.4:0), y-0.1, z + (ry?0:0.4)); scene.add(pl);
+    sconces.push({g, glow:L.glow, light:pl});
+  }
+
+  // rug, barrel, street
+  const rug = mesh(new THREE.PlaneGeometry(3.4,2.4), new THREE.MeshStandardMaterial({map:texRug(), roughness:1}),-1.2,0.006,-0.6); rug.rotation.x=-Math.PI/2; rug.receiveShadow=true; scene.add(rug);
+  const barrel = new THREE.Group(); barrel.position.set(-0.4,0,2.35); scene.add(barrel);
+  barrel.add(mesh(new THREE.CylinderGeometry(0.27,0.24,0.62,10), mat(0x7a4c2b),0,0.31,0));
+  for(const y of [0.1,0.52]){ const h = mesh(new THREE.TorusGeometry(0.265,0.015,4,14), mat(0x2b2b2b,{metalness:0.5}),0,y,0); h.rotation.x=Math.PI/2; barrel.add(h); }
+  for(const [x,z,rz] of [[-0.08,0.02,0.15],[0.08,-0.05,-0.12],[0.02,0.09,0.05]]){ const st = mesh(new THREE.CylinderGeometry(0.018,0.018,1.0,5), mat(0x5e3a20),x,0.85,z); st.rotation.z=rz; barrel.add(st); }
+  barrel.add(mesh(new THREE.SphereGeometry(0.05,6,5), new THREE.MeshStandardMaterial({color:0x7fd6c8, emissive:0x1f6a60}), 0.02,1.38,0.12));
+  barrel.traverse(o=>{ if(o.isMesh) o.castShadow=true; });
+  const post = new THREE.Group(); post.position.set(-6.7,0,-1.0); scene.add(post);
+  post.add(mesh(new THREE.CylinderGeometry(0.05,0.07,2.6,6), mat(0x2b2b2b,{metalness:0.4}),0,1.3,0));
+  post.add(mesh(new THREE.BoxGeometry(0.5,0.04,0.04), mat(0x2b2b2b),0.22,2.5,0));
+  const sl = makeLantern(); sl.g.position.set(0.42,2.15,0); post.add(sl.g); streetGlow = sl.glow;
+  streetLight = new THREE.PointLight(0xffb05a, 0, 7, 1.5); streetLight.position.set(-6.3,2.1,-1.0); scene.add(streetLight);
+  post.traverse(o=>{ if(o.isMesh) o.castShadow=true; });
+
+  // chalkboard sign (upgrade)
+  chalkTex = canvasTex(256,200,()=>{}); drawChalk();
+  chalk = new THREE.Group(); chalk.position.set(-6.1,0,3.4); chalk.rotation.y = 0.5; scene.add(chalk);
+  const board = new THREE.MeshStandardMaterial({map:chalkTex, roughness:0.9});
+  const f1 = mesh(new THREE.BoxGeometry(0.62,0.8,0.04), [mat(0x6a4226),mat(0x6a4226),mat(0x6a4226),mat(0x6a4226),board,mat(0x6a4226)],0,0.42,0.13); f1.rotation.x=-0.28; chalk.add(f1);
+  const f2 = mesh(new THREE.BoxGeometry(0.62,0.8,0.04), mat(0x6a4226),0,0.42,-0.13); f2.rotation.x=0.28; chalk.add(f2);
+  chalk.traverse(o=>{ if(o.isMesh) o.castShadow=true; });
+
+  // loupe (upgrade)
+  loupe = new THREE.Group(); loupe.position.set(2.95,0.945,0.3); loupe.rotation.y=0.7; scene.add(loupe);
+  const lr = mesh(new THREE.TorusGeometry(0.06,0.012,5,12), br); lr.rotation.x=Math.PI/2; loupe.add(lr);
+  const lg = mesh(new THREE.CylinderGeometry(0.058,0.058,0.006,12), new THREE.MeshStandardMaterial({color:0xcfe8ff, roughness:0.05, metalness:0.1, transparent:true, opacity:0.6})); loupe.add(lg);
+  const lh = mesh(new THREE.CylinderGeometry(0.012,0.014,0.12,6), mat(0x4a2f1c),0.12,0,0); lh.rotation.z=Math.PI/2; loupe.add(lh);
+
+  // keeper
+  const k = makeCharacter(KEEPER); k.g.position.set(3.85,0,-0.4); k.g.scale.setScalar(1.14); scene.add(k.g);
+  keeper = {g:k.g, parts:k, bubble:makeBubble(), sayT:0, jump:0, t:0, faceY:-Math.PI/2, baseScale:1.14, headY:1.22};
+  k.g.rotation.y = -Math.PI/2;
+
+  cat = makeCat(); scene.add(cat.g);
+
+  // dust
+  const N = 70, pos = new Float32Array(N*3);
+  for(let i=0;i<N;i++){ pos[i*3]=rnd(-4.5,4.5); pos[i*3+1]=rnd(0.3,2.9); pos[i*3+2]=rnd(-3.6,2.4); }
+  const dg = new THREE.BufferGeometry(); dg.setAttribute('position', new THREE.BufferAttribute(pos,3));
+  dust = new THREE.Points(dg, new THREE.PointsMaterial({color:0xffe3a6, size:0.035, transparent:true, opacity:0.5, depthWrite:false}));
+  scene.add(dust);
+
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(()=>{ drawSign(); drawChalk(); });
+}
+
+function applyUpgrades(){
+  const u = S.upgrades;
+  unitGroups.C.visible = !!u.shelfC; unitGroups.D.visible = !!u.rackD;
+  cat.g.visible = !!u.cat;
+  sconces.forEach(s => s.g.visible = !!u.lanterns);
+  chalk.visible = !!u.sign; loupe.visible = !!u.loupe;
+  refreshShelves();
+}
+function refreshShelves(){
+  for(let i=0;i<16;i++){
+    const s = S.slots[i]; const want = (s && unlocked(i)) ? s.type : null; const m = R.slotMesh[i];
+    if(m && (!want || m.userData.type !== want)){ scene.remove(m); R.slotMesh[i] = null; }
+    if(want && !R.slotMesh[i]){
+      const it = buildItem(want); it.userData.type = want; it.position.copy(SLOTS[i].pos); it.rotation.y = SLOTS[i].rot + rnd(-0.25,0.25);
+      scene.add(it); R.slotMesh[i] = it;
+    }
+    if(R.slotMesh[i]) R.slotMesh[i].visible = !R.reserved[i];
+  }
+}
+function popMesh(m){ if(!m) return; m.userData.pop = 0; m.scale.setScalar(0.01); }
+function placeItem(i, t, cost){ S.slots[i] = {type:t, cost}; refreshShelves(); popMesh(R.slotMesh[i]); }
+
+/* ---------------- camera framing ---------------- */
+const FOV = 34, EL = 0.66, AZ = 0.6;
+const camDir = az => V(Math.sin(az)*Math.cos(EL), Math.sin(EL), Math.cos(az)*Math.cos(EL));
+const FRAMES = {
+  room:{ target:V(0,0.9,-0.6), pts:[V(-5.2,0,-4.2),V(5.2,0,-4.2),V(-5.2,0,3.0),V(5.2,0,3.0),V(-5.2,3.2,-4.2),V(5.2,3.2,-4.2),V(-5.2,3.2,3.0),V(5.2,-0.4,3.0),V(-5.2,-0.4,3.0)] },
+  counter:{ target:V(2.9,0.8,-0.4), pts:[V(1.3,0,-1.9),V(4.5,0,-1.9),V(1.3,0,1.1),V(4.5,0,1.1),V(2.0,1.7,-0.4),V(4.0,1.8,-0.4)] },
+};
+let W = innerWidth, H = innerHeight, topRes = 70, botRes = 0;
+const desired = {target:V(0,0.9,-0.6), dist:30, top:70, avail:500};
+const cs = {target:V(0,0.9,-0.6), dist:30, top:70, avail:500, init:false};
+function fitDistance(pts, target, aspect){
+  fitCam.aspect = aspect; fitCam.fov = FOV; fitCam.clearViewOffset(); fitCam.updateProjectionMatrix();
+  const dir = camDir(AZ); let lo = 2, hi = 120; const v = new THREE.Vector3();
+  for(let i=0;i<24;i++){
+    const mid = (lo+hi)/2; fitCam.position.copy(target).addScaledVector(dir, mid); fitCam.lookAt(target); fitCam.updateMatrixWorld(true);
+    let ok = true; for(const p of pts){ v.copy(p).project(fitCam); if(Math.abs(v.x)>0.97 || Math.abs(v.y)>0.94){ ok=false; break; } }
+    if(ok) hi = mid; else lo = mid;
+  }
+  return hi;
+}
+function computeFraming(){
+  const f = FRAMES[R.mode]; const avail = Math.max(170, H - topRes - botRes);
+  desired.target.copy(f.target); desired.dist = fitDistance(f.pts, f.target, W/avail); desired.top = topRes; desired.avail = avail;
+  if(!cs.init){ cs.target.copy(desired.target); cs.dist = desired.dist; cs.top = desired.top; cs.avail = desired.avail; cs.init = true; }
+}
+function setMode(m){ if(R.mode !== m){ R.mode = m; computeFraming(); } }
+function activeSheet(){ for(const id of ['#haggle','#night','#dock']){ const e = $(id); if(!e.hidden) return e; } return null; }
+function layout(){
+  W = innerWidth; H = innerHeight; if(renderer) renderer.setSize(W, H);
+  const hud = $('#hud'); topRes = hud.offsetHeight;
+  document.documentElement.style.setProperty('--hud-h', topRes+'px');
+  const sh = activeSheet(); botRes = sh ? sh.offsetHeight + (parseFloat(getComputedStyle(sh).bottom)||0) : 0;
+  if(fitCam) computeFraming();
+}
+function updateCamera(dt){
+  const k = 1 - Math.exp(-dt*3.2);
+  cs.target.lerp(desired.target, k); cs.dist += (desired.dist-cs.dist)*k; cs.top += (desired.top-cs.top)*k; cs.avail += (desired.avail-cs.avail)*k;
+  camera.aspect = W/cs.avail; camera.setViewOffset(W, cs.avail, 0, -cs.top, W, H); camera.updateProjectionMatrix();
+  const az = AZ + (reduceMotion ? 0 : Math.sin(R.time*0.16)*0.025);
+  camera.position.copy(cs.target).addScaledVector(camDir(az), cs.dist); camera.lookAt(cs.target);
+}
+
+/* ---------------- lighting ---------------- */
+const C_DAWN = new THREE.Color(0xf3c08f), C_NOON = new THREE.Color(0xbfe0ee), C_DUSK = new THREE.Color(0xef8a5a), C_NIGHT = new THREE.Color(0x1a2442);
+const BG_DAY = new THREE.Color(0x24312f), BG_DUSK = new THREE.Color(0x2e2627), BG_NIGHT = new THREE.Color(0x0b1119);
+const C_WHITE = new THREE.Color(0xffffff), C_MOON = new THREE.Color(0x7088c8);
+const tmpC = new THREE.Color();
+function applyLighting(p, n){
+  if(p < 0.5) tmpC.copy(C_DAWN).lerp(C_NOON, p*2); else tmpC.copy(C_NOON).lerp(C_DUSK, (p-0.5)*2);
+  tmpC.lerp(C_NIGHT, n); skyMat.color.copy(tmpC);
+  sun.color.copy(tmpC).lerp(C_WHITE, 0.55).lerp(C_MOON, n);
+  const dusk = Math.max(0, p-0.6)/0.4;
+  sun.intensity = (0.95 - 0.38*dusk)*(1-n) + 0.2*n;
+  sun.position.set(6 - 7*p, 10, 7);
+  hemi.intensity = 0.55*(1-n) + 0.2*n;
+  const lamp = (0.45 + 0.45*dusk)*(1-n) + 1.25*n;
+  counterLight.intensity = lamp; counterGlow.emissiveIntensity = 0.6 + lamp*0.7;
+  const on = !!(S && S.upgrades.lanterns);
+  sconces.forEach(s => { s.light.intensity = on ? lamp*0.85 : 0; s.glow.emissiveIntensity = 0.6 + lamp*0.7; });
+  const st = Math.max(n, dusk*0.6); streetLight.intensity = st*1.3; streetGlow.emissiveIntensity = 0.2 + st*1.4;
+  scene.background.copy(BG_DAY).lerp(BG_DUSK, dusk).lerp(BG_NIGHT, n);
+  dust.material.opacity = 0.5*(1-n) + 0.12*n;
+}
+
+/* ---------------- DOM helpers ---------------- */
+function makeBubble(){ const b = document.createElement('div'); b.className='bubble'; b.hidden = true; $('#bubbles').appendChild(b); return b; }
+function say(ch, text, dur){ ch.bubble.textContent = text; ch.bubble.hidden = false; ch.sayT = dur || 1.9; }
+const projV = new THREE.Vector3();
+function toScreen(p){ projV.copy(p).project(camera); return [(projV.x+1)/2*W, (1-projV.y)/2*H, projV.z]; }
+function floatText(world, text, cls){
+  const [x,y] = toScreen(world); const e = document.createElement('div'); e.className = 'float '+(cls||''); e.textContent = text; e.style.left = x+'px'; e.style.top = y+'px';
+  $('#bubbles').appendChild(e); setTimeout(()=>e.remove(), 1500);
+}
+function toast(html){
+  const box = $('#toasts'); const t = document.createElement('div'); t.className='toast'; t.innerHTML = html; box.appendChild(t);
+  while(box.children.length > 3) box.firstChild.remove();
+  setTimeout(()=>t.remove(), 3700);
+}
+function showSheet(id){ for(const s of ['#dock','#haggle','#night']) $(s).hidden = (s !== id); requestAnimationFrame(layout); }
+
+/* ---------------- customers ---------------- */
+let cid = 0;
+function walk(c, pts, cb){ c.path = pts.map(p => p.clone()); c.onArrive = cb || null; }
+function faceTo(c, p){ c.faceY = Math.atan2(p.x - c.g.position.x, p.z - c.g.position.z); }
+function attachCarry(c, t){ removeCarry(c); const it = buildItem(t); it.scale.setScalar(0.85); c.parts.carry.add(it); c.carryMesh = it; c.carrying = true; }
+function removeCarry(c){ if(c.carryMesh){ c.parts.carry.remove(c.carryMesh); c.carryMesh = null; } c.carrying = false; }
+const activeCount = () => R.customers.filter(c => !c.leaving).length;
+
+function findSlotOf(t){ const a = []; for(let i=0;i<16;i++) if(unlocked(i) && S.slots[i] && S.slots[i].type===t && !R.reserved[i]) a.push(i); return a.length ? pick(a) : -1; }
+
+function spawnCustomer(){
+  const w = {knight:3, mage:2.5, ranger:3, farmer:Math.max(1, 3.5 - S.rep*0.45), dwarf:2, goblin:1.1};
+  if(S.rep >= 1.5) w.noble = 0.6 + S.rep*0.45;
+  const ak = wpick(w), a = ARCH[ak];
+  const c = { id:++cid, ak, a, name:pick(a.names), seller: a.sell>=1 || Math.random()<a.sell, path:[], onArrive:null, speed:1.75, t:Math.random()*10, faceY:0, walkK:0, spawnK:0, baseScale:a.scale||1, leaving:false, dying:false, waitT:0, after:null, sayT:0, slot:-1 };
+  const ch = makeCharacter(a); c.g = ch.g; c.parts = ch; c.headY = 1.2*c.baseScale;
+  c.g.position.copy(STREET); c.g.scale.setScalar(0.01); scene.add(c.g);
+  c.bubble = makeBubble();
+  R.customers.push(c); R.spawned++;
+  walk(c, [DOOR_OUT, DOOR_IN], () => { sfx('bell'); decide(c); });
+}
+function decide(c){
+  if(c.seller){
+    const w = {}; for(const t in c.a.prefs) w[t] = c.a.prefs[t] * (t==='gem'||t==='helm' ? 0.7 : 1);
+    c.itemType = wpick(w); attachCarry(c, c.itemType);
+    say(c, c.ak==='goblin' ? 'Psst. Buying?' : 'Got something.');
+    requestCounter(c); return;
+  }
+  const w = {}; for(const t in c.a.prefs) w[t] = c.a.prefs[t] * Math.pow(S.market[t].d, 1.6);
+  const want = wpick(w); let idx = findSlotOf(want);
+  if(idx < 0){
+    S.today.missed[want] = (S.today.missed[want]||0) + 1; addRep(-0.02);
+    const avail = {}; for(const t in c.a.prefs){ if(findSlotOf(t) >= 0) avail[t] = c.a.prefs[t]; }
+    if(Object.keys(avail).length && Math.random() < 0.5){
+      idx = findSlotOf(wpick(avail)); say(c, `No ${ITEMS[want].name}? Hm.`, 2.2);
+    } else {
+      say(c, `No ${ITEMS[want].name}?`, 2.4);
+      toast(`<b>${c.name}</b> wanted ${art(ITEMS[want].name)}. None on your shelves.`);
+      walk(c, [V(-2.2,0,0.7)], () => { c.waitT = 1.3; c.after = () => leave(c); });
+      return;
+    }
+  }
+  c.slot = idx; R.reserved[idx] = true;
+  walk(c, [SLOTS[idx].stand], () => {
+    faceTo(c, SLOTS[idx].pos); c.waitT = 0.9;
+    c.after = () => { c.itemType = S.slots[idx].type; if(R.slotMesh[idx]) R.slotMesh[idx].visible = false; attachCarry(c, c.itemType); sfx('pop'); requestCounter(c); };
+  });
+}
+function requestCounter(c){
+  if(!R.counter || R.counter === c){
+    R.counter = c; if(R.wait === c) R.wait = null;
+    walk(c, [COUNTER_SPOT], () => { c.faceY = Math.PI/2; startHaggle(c); });
+  } else {
+    R.wait = c;
+    walk(c, [WAIT_SPOT], () => faceTo(c, COUNTER_SPOT));
+  }
+}
+function releaseCounter(){
+  R.counter = null;
+  if(R.wait){ const w = R.wait; R.wait = null; requestCounter(w); }
+}
+function leave(c){
+  if(c.leaving) return; c.leaving = true; R.done++;
+  walk(c, [DOOR_IN, DOOR_OUT, STREET], () => { c.dying = true; });
+}
+function clearCustomers(){
+  for(const c of R.customers){ scene.remove(c.g); c.bubble.remove(); }
+  R.customers = []; R.counter = null; R.wait = null; R.reserved.fill(false);
+  if(R.counterItem){ scene.remove(R.counterItem); R.counterItem = null; }
+}
+
+function updateChar(c, dt){
+  c.t += dt; let moving = false;
+  if(c.path && c.path.length){
+    const tgt = c.path[0], p = c.g.position; const dx = tgt.x-p.x, dz = tgt.z-p.z, d = Math.hypot(dx,dz), step = c.speed*dt;
+    if(d <= step){ p.x = tgt.x; p.z = tgt.z; c.path.shift(); if(!c.path.length){ const cb = c.onArrive; c.onArrive = null; if(cb) cb(); } }
+    else { p.x += dx/d*step; p.z += dz/d*step; c.faceY = Math.atan2(dx,dz); moving = true; }
+  }
+  let diff = c.faceY - c.g.rotation.y; diff = Math.atan2(Math.sin(diff), Math.cos(diff)); c.g.rotation.y += diff*Math.min(1, dt*10);
+  c.walkK += ((moving?1:0) - c.walkK)*Math.min(1, dt*8);
+  const P = c.parts, ph = c.t*9, sw = Math.sin(ph)*0.7*c.walkK;
+  P.w.position.y = Math.abs(Math.sin(ph))*0.06*c.walkK + Math.sin(c.t*2.1)*0.008;
+  P.w.rotation.z = Math.sin(ph)*0.05*c.walkK;
+  const carryX = c.carrying ? -0.95 : 0;
+  P.armL.rotation.x = carryX + (c.carrying ? sw*0.15 : sw);
+  P.armR.rotation.x = carryX - (c.carrying ? sw*0.15 : sw);
+  if(c.waitT > 0){ c.waitT -= dt; if(c.waitT <= 0 && c.after){ const f = c.after; c.after = null; f(); } }
+  if(c.sayT > 0){ c.sayT -= dt; if(c.sayT <= 0) c.bubble.hidden = true; }
+}
+
+/* ---------------- haggling ---------------- */
+function startHaggle(c){
+  if(!S || S.phase !== 'day') return;
+  const t = c.itemType, v = fair(t), a = c.a;
+  const pat = a.patience + (S.upgrades.lanterns?1:0) + (S.rep>=3?1:0);
+  const H = {c, t, v, seller:c.seller, patience:pat, max:pat, last:null, cost: c.seller ? 0 : (S.slots[c.slot] ? S.slots[c.slot].cost : 0)};
+  if(!c.seller){
+    H.wtp = Math.max(2, Math.round(v * a.wealth * rnd(0.88,1.22) * (1+0.03*S.rep) * (S.upgrades.cat?1.05:1)));
+    H.lo = Math.max(1, Math.round(v*0.4)); H.hi = Math.round(v*2.6)+5; H.price = Math.round(v*1.3);
+    H.quote = fill(pick(LINES.open[c.ak] || LINES.open.ranger), t);
+    H.read = [Math.round(H.wtp*rnd(0.84,0.94)), Math.round(H.wtp*rnd(1.05,1.15))];
+  } else {
+    H.ask = Math.max(2, Math.round(v * rnd(0.42,0.68) * (c.ak==='goblin'?0.85:1)));
+    H.lo = 1; H.hi = Math.round(v*1.6)+5; H.price = Math.max(1, Math.round(v*0.45));
+    H.quote = fill(pick(c.ak==='goblin' ? LINES.sellGoblin : LINES.sellOpen), t);
+    H.read = [Math.round(H.ask*rnd(0.86,0.95)), Math.round(H.ask*rnd(1.05,1.15))];
+  }
+  H.price = clamp(H.price, H.lo, H.hi);
+  removeCarry(c);
+  R.counterItem = buildItem(t); R.counterItem.position.copy(COUNTER_TOP); R.counterItem.rotation.y = 0.5; scene.add(R.counterItem); popMesh(R.counterItem);
+  R.haggle = H; R.firstHaggles++;
+  $('#hgCoach').hidden = !(S.day === 1 && R.firstHaggles <= 2 && !c.seller);
+  const sl = $('#hgSlider'); sl.min = H.lo; sl.max = H.hi;
+  updateHaggle(); showSheet('#haggle'); setMode('counter');
+  say(c, 'Hmm…', 1.4); sfx('hmm');
+}
+function updateHaggle(){
+  const H = R.haggle; if(!H) return;
+  const c = H.c, it = ITEMS[H.t];
+  setText($('#hgArch'), c.a.label); setText($('#hgName'), c.name);
+  $('#hgPat').innerHTML = Array.from({length:H.max}, (_,i) => `<span class="pip${i<H.patience?' on':''}"></span>`).join('');
+  setText($('#hgQuote'), '“' + H.quote + '”');
+  $('#hgIcon').innerHTML = iconHTML(H.t);
+  setText($('#hgItem'), it.name);
+  const free = freeCount();
+  setText($('#hgVal'), H.seller ? `Fair price ${H.v}g · ${free} shelf ${free===1?'space':'spaces'} free` : `Fair price ${H.v}g · you paid ${H.cost}g`);
+  const d = S.market[H.t].d, tag = $('#hgTag');
+  if(d >= 1.1){ tag.hidden = false; tag.className = 'tag up'; tag.textContent = '▲ In demand'; }
+  else if(d <= 0.9){ tag.hidden = false; tag.className = 'tag down'; tag.textContent = '▼ Glut'; }
+  else tag.hidden = true;
+  const rd = $('#hgRead');
+  if(S.upgrades.loupe){ rd.hidden = false; rd.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="10" cy="10" r="6"/><path d="M15 15l6 6"/></svg><span>${H.seller ? 'They would likely let it go for' : 'They look ready to pay about'} ${H.read[0]}–${H.read[1]}g</span>`; }
+  else rd.hidden = true;
+  const p = H.price;
+  setText($('#hgPrice'), String(p)); $('#hgSlider').value = p;
+  const mg = $('#hgMargin');
+  if(H.seller){ mg.className = ''; setText(mg, `resells near ${H.v}g`); }
+  else { const pr = p - H.cost; mg.className = pr < 0 ? 'neg' : 'pos'; setText(mg, `${pr<0?'loss':'profit'} ${Math.abs(pr)}g`); }
+  const offer = $('#hgOffer'), take = $('#hgTake'), refuse = $('#hgRefuse');
+  if(H.seller){
+    if(free === 0){ offer.disabled = true; setText(offer, 'Shelves full'); }
+    else if(p > S.gold){ offer.disabled = true; setText(offer, 'Not enough gold'); }
+    else { offer.disabled = false; setText(offer, `Offer ${p}g`); }
+    setText(refuse, 'No thanks');
+    if(H.last != null){ take.hidden = false; setText(take, `Pay ${H.last}g`); take.disabled = H.last > S.gold || free === 0; } else take.hidden = true;
+  } else {
+    offer.disabled = false; setText(offer, `Ask ${p}g`); setText(refuse, 'Send away');
+    if(H.last != null){ take.hidden = false; setText(take, `Take ${H.last}g`); take.disabled = false; } else take.hidden = true;
+  }
+}
+function nudge(d){ const H = R.haggle; if(!H) return; H.price = clamp(H.price + d, H.lo, H.hi); sfx('click'); updateHaggle(); }
+function offer(){
+  const H = R.haggle; if(!H) return; const p = H.price;
+  if(!H.seller){
+    if(p <= H.wtp) return closeSale(p);
+    const insult = p/H.wtp > 1.5; H.patience -= insult ? 2 : 1;
+    if(H.patience <= 0) return walkout(true);
+    let next = H.last == null ? Math.round(H.wtp*rnd(0.66,0.8)) : Math.round(H.last + (H.wtp-H.last)*rnd(0.35,0.55));
+    next = Math.min(next, H.wtp, p-1); if(H.last != null) next = Math.max(next, H.last);
+    H.last = next; H.quote = fill(pick(insult ? LINES.insult : LINES.counter), H.t, next) + (H.patience === 1 ? ' ' + pick(LINES.warn) : '');
+    say(H.c, insult ? 'Hah!' : 'Hmm.', 1.2); sfx('hmm');
+  } else {
+    if(p > S.gold || freeCount() === 0) return;
+    if(p >= H.ask) return closeBuy(p);
+    const insult = p/H.ask < 0.6; H.patience -= insult ? 2 : 1;
+    if(H.patience <= 0) return walkout(true);
+    let next = H.last == null ? Math.round(H.ask*rnd(1.3,1.5)) : Math.round(H.last - (H.last-H.ask)*rnd(0.35,0.55));
+    next = Math.max(next, H.ask, p+1); if(H.last != null) next = Math.min(next, H.last);
+    H.last = next; H.quote = fill(pick(insult ? LINES.sellInsult : LINES.sellCounter), H.t, next) + (H.patience === 1 ? ' ' + pick(LINES.warn) : '');
+    say(H.c, insult ? 'Pah!' : 'Hmm.', 1.2); sfx('hmm');
+  }
+  updateHaggle();
+}
+function takeCounter(){ const H = R.haggle; if(!H || H.last == null) return; if(H.seller) closeBuy(H.last); else closeSale(H.last); }
+function endHaggle(){
+  R.haggle = null; if(R.counterItem){ scene.remove(R.counterItem); R.counterItem = null; }
+  showSheet('#dock'); setMode('room'); releaseCounter(); updateHUD();
+}
+function addRep(d){ S.rep = clamp(S.rep + d, 0, 5); updateHUD(); }
+function coinBurst(){
+  const geo = new THREE.CylinderGeometry(0.05,0.05,0.012,10), m = mat(0xe3b55e,{metalness:0.8,roughness:0.3});
+  for(let i=0;i<10;i++){ const c = mesh(geo, m, COUNTER_TOP.x, COUNTER_TOP.y+0.1, COUNTER_TOP.z); c.userData = {v:V(rnd(-0.8,0.8), rnd(2,3.4), rnd(-0.8,0.8)), life:1.1, spin:rnd(5,12)}; scene.add(c); R.coins.push(c); }
+}
+function closeSale(p){
+  const H = R.haggle, c = H.c, T = S.today;
+  S.gold += p; T.revenue += p; T.cogs += H.cost; T.sales++;
+  S.totals.sales++; S.totals.revenue += p; S.totals.best = Math.max(S.totals.best, p);
+  S.slots[c.slot] = null; R.reserved[c.slot] = false; refreshShelves();
+  if(p <= H.v){ addRep(0.09); T.delighted++; say(c, pick(['A bargain!','Splendid!',"I'll be back!"])); }
+  else { addRep(0.04); say(c, pick(['Deal.','Fair enough.','Done.'])); }
+  attachCarry(c, H.t);
+  floatText(COUNTER_TOP.clone().add(V(0,0.5,0)), `+${p}g`); coinBurst(); sfx('coin');
+  keeper.jump = 0.5; say(keeper, 'Thank you!', 1.4);
+  endHaggle(); leave(c); checkCharter();
+}
+function closeBuy(p){
+  const H = R.haggle, c = H.c, T = S.today; const i = freeSlot(); if(i < 0 || p > S.gold) return;
+  S.gold -= p; T.spentBuying += p; T.bought++;
+  placeItem(i, H.t, p);
+  if(p >= H.v*0.75){ addRep(0.08); T.delighted++; say(c, pick(['Generous!','Pleasure doing business.'])); }
+  else { addRep(0.03); say(c, pick(['Fine, fine.','Done.','Coin is coin.'])); }
+  floatText(COUNTER_TOP.clone().add(V(0,0.5,0)), `−${p}g`, 'loss'); sfx('pop');
+  endHaggle(); leave(c);
+}
+function walkout(angry){
+  const H = R.haggle; if(!H) return; const c = H.c, T = S.today;
+  if(!H.seller){ R.reserved[c.slot] = false; refreshShelves(); popMesh(R.slotMesh[c.slot]); }
+  else attachCarry(c, H.t);
+  if(angry){ T.angry++; addRep(-0.15); say(c, pick(['Thief!','Robbery!',"I'll go to Larkspur!"]), 2.2); sfx('bad'); }
+  else { addRep(-0.03); say(c, pick(['Fine, then.','Suit yourself.'])); }
+  endHaggle(); leave(c);
+}
+
+/* ---------------- day / night ---------------- */
+function freshToday(){ return {revenue:0, cogs:0, sales:0, bought:0, spentBuying:0, delighted:0, angry:0, missed:{}, repStart:S.rep, goldStart:S.gold, visitors:0}; }
+function beginDay(){
+  S.phase = 'day'; S.today = freshToday();
+  R.total = Math.min(13, 4 + Math.floor(S.rep) + Math.floor((S.day-1)/2) + (S.upgrades.sign?2:0));
+  S.today.visitors = R.total;
+  R.spawned = 0; R.done = 0; R.ending = false; R.nextSpawn = R.time + 1.4; R.firstHaggles = S.day===1 ? R.firstHaggles : 99;
+  showSheet('#dock'); setMode('room');
+  const rm = $('#dockRumor');
+  if(S.rumors && S.rumors.length){ rm.hidden = false; rm.innerHTML = '<b>Tavern talk:</b> ' + S.rumors.map(r => r.text).join(' '); }
+  else rm.hidden = true;
+  updateHUD(); updateDock();
+}
+function openShop(){
+  if(!S.next) genNext();
+  S.day++; S.market = S.next; S.rumors = S.nextRumors; S.next = null; S.nextRumors = [];
+  sfx('bell'); beginDay();
+}
+function genNext(){
+  const n = {};
+  for(const t of TYPES){ const m = S.market[t] || {w:1,d:1}; n[t] = { w: 1 + (m.w-1)*0.45 + gauss()*0.07, d: 1 + (m.d-1)*0.35 + gauss()*0.06 }; }
+  const count = S.day < 2 ? 1 : (Math.random() < 0.6 ? 2 : 1);
+  const pool = RUMORS.slice().sort(() => Math.random()-0.5), used = new Set(), chosen = [];
+  for(const r of pool){ if(chosen.length >= count) break; const ks = Object.keys(r.eff); if(ks.some(k => used.has(k))) continue; chosen.push(r); ks.forEach(k => used.add(k)); }
+  for(const r of chosen) for(const k in r.eff){ n[k].d *= r.eff[k][0]; n[k].w *= r.eff[k][1]; }
+  for(const t of TYPES){ n[t].w = clamp(n[t].w, 0.4, 2); n[t].d = clamp(n[t].d, 0.5, 2.2); }
+  S.next = n; S.nextRumors = chosen.map(r => ({text:r.text, types:Object.keys(r.eff)}));
+}
+const duesFor = d => 12 + 5*(d-1);
+function enterNight(){
+  if(S.phase !== 'day') return;
+  clearCustomers(); refreshShelves();
+  S.phase = 'night';
+  const dues = duesFor(S.day); S.gold -= dues;
+  S.lastLedger = Object.assign({}, S.today, {dues, day:S.day, goldEnd:S.gold, repEnd:S.rep});
+  S.debtNights = S.gold < 0 ? S.debtNights + 1 : 0;
+  genNext(); updateHUD();
+  if(S.debtNights >= 3){ gameOver(); return; }
+  save(); checkCharter();
+  showNight('ledger');
+}
+let nightTab = 'ledger';
+function showNight(tab){
+  nightTab = tab || nightTab;
+  setText($('#nightEyebrow'), S.debtNights ? 'Night · in debt' : 'Night');
+  setText($('#nightTitle'), `Day ${S.day} closed`);
+  setText($('#openBtn'), `Open shop · Day ${S.day+1}`);
+  document.querySelectorAll('.tabs button').forEach(b => b.setAttribute('aria-selected', String(b.dataset.tab === nightTab)));
+  renderNightBody();
+  showSheet('#night'); setMode('room');
+}
+function renderNightBody(){
+  const body = $('#nightBody'), keep = body.scrollTop;
+  if(nightTab === 'ledger') body.innerHTML = ledgerHTML();
+  else if(nightTab === 'market') body.innerHTML = marketHTML();
+  else body.innerHTML = workshopHTML();
+  body.scrollTop = keep;
+}
+const sg = n => (n>0?'+':n<0?'−':'') + Math.abs(Math.round(n)) + 'g';
+function ledgerHTML(){
+  const L = S.lastLedger;
+  if(!L || L.day !== S.day) return `<p class="note">Welcome back to Hollowmere. Last night's ledger page is smudged past reading, but the market is open and the shelves are as you left them.</p>${debtNote()}`;
+  const gross = L.revenue - L.cogs, change = L.goldEnd - L.goldStart, dr = L.repEnd - L.repStart;
+  const missed = Object.entries(L.missed).map(([t,n]) => `${ITEMS[t].name} ×${n}`).join(', ');
+  return `<dl class="ledger">
+    <dt>Visitors</dt><dd>${L.visitors}</dd>
+    <dt>Items sold</dt><dd>${L.sales}</dd>
+    <dt>Takings from sales</dt><dd class="pos">${sg(L.revenue)}</dd>
+    <dt>What those items cost you</dt><dd>${sg(-L.cogs)}</dd>
+    <dt>Profit on sales</dt><dd class="${gross>=0?'pos':'neg'}">${sg(gross)}</dd>
+    <dt>Bought from sellers (${L.bought})</dt><dd>${sg(-L.spentBuying)}</dd>
+    <dt>Guild dues</dt><dd class="neg">${sg(-L.dues)}</dd>
+    <div class="total" style="display:contents"><dt>Purse, end of day</dt><dd>${Math.round(L.goldEnd)}g <small class="${change>=0?'pos':'neg'}">(${sg(change)})</small></dd></div>
+    <dt>Reputation</dt><dd class="${dr>=0?'pos':'neg'}">${L.repEnd.toFixed(1)} ★ (${dr>=0?'+':'−'}${Math.abs(dr).toFixed(2)})</dd>
+    <dt>Happy customers · walkouts</dt><dd>${L.delighted} · ${L.angry}</dd>
+  </dl>
+  ${missed ? `<p class="note"><b>Asked for, not on the shelf:</b> ${missed}. Lost sales cost a little reputation too.</p>` : `<p class="note">Nobody left empty-handed for lack of stock today.</p>`}
+  <p class="note">Tomorrow's guild dues: <b>${duesFor(S.day+1)}g</b>.</p>
+  ${debtNote()}`;
+}
+function debtNote(){ return S.gold < 0 ? `<p class="warn">You owe the Guild ${Math.abs(Math.round(S.gold))}g. Clear it within ${3 - S.debtNights} ${3-S.debtNights===1?'night':'nights'} or they take the shop.</p>` : ''; }
+function marketHTML(){
+  const lm = (S.lastLedger && S.lastLedger.day === S.day) ? S.lastLedger.missed : {};
+  const notices = S.nextRumors.length ? S.nextRumors.map(r => `<p class="notice">“${r.text}”<small>Touches ${r.types.map(t => ITEMS[t].name).join(', ')}</small></p>`).join('') : '<p class="notice">“Quiet night. Nothing worth repeating.”</p>';
+  const rows = TYPES.map(t => {
+    const cost = wholesale(t), d = S.next[t].d, pct = Math.round((d-1)*100);
+    const tag = pct >= 8 ? `<span class="tag up">Buyers +${pct}%</span>` : pct <= -8 ? `<span class="tag down">Buyers ${pct}%</span>` : `<span class="tag flat">Steady</span>`;
+    const can = S.gold >= cost && freeCount() > 0;
+    const miss = lm[t] ? ` · asked for ${lm[t]}×` : '';
+    return `<div class="mrow"><span class="icon">${iconHTML(t)}</span><div class="m-name"><b>${ITEMS[t].name}</b><span>On shelf ${stockOf(t)}${miss}</span></div><div class="m-num"><b>${cost}g</b>${tag}</div><button class="btn secondary buy" data-buy="${t}" ${can?'':'disabled'} aria-label="Buy one ${ITEMS[t].name} for ${cost} gold">Buy</button></div>`;
+  }).join('');
+  return `<div class="notices"><h3>Talk at the Gilded Gourd</h3>${notices}</div>
+    <div class="space"><span>Free shelf space <b>${freeCount()} of ${capacity()}</b></span><span>Wholesale, tonight</span></div>${rows}
+    <p class="note">Wholesale prices already react to the gossip. Tomorrow's customers will too, usually by more.</p>`;
+}
+function workshopHTML(){
+  return UPGRADES.map(u => {
+    const own = !!S.upgrades[u.id];
+    return `<div class="ucard"><b>${u.name}</b><p>${u.desc}</p><button class="btn ${own?'ghost':'secondary'}" data-up="${u.id}" ${own || S.gold < u.cost ? 'disabled' : ''}>${own ? 'Built' : u.cost+'g'}</button></div>`;
+  }).join('') + `<p class="note">Upgrades stay with the shop for good.</p>`;
+}
+function buyStock(t){
+  const cost = wholesale(t), i = freeSlot(); if(i < 0 || S.gold < cost) return;
+  S.gold -= cost; placeItem(i, t, cost); sfx('pop'); updateHUD(); save(); renderNightBody();
+}
+function buyUpgrade(id){
+  const u = UPGRADES.find(x => x.id === id); if(!u || S.upgrades[id] || S.gold < u.cost) return;
+  S.gold -= u.cost; S.upgrades[id] = true; applyUpgrades(); sfx('coin'); updateHUD(); save(); renderNightBody();
+  toast(`Built: <b>${u.name}</b>`);
+  if(id === 'cat') say(keeper, 'Hello, puss.', 1.8);
+}
+function checkCharter(){
+  if(S.won || S.gold < 2000) return; S.won = true; save();
+  showModal('Hollowmere Curios', 'The Guild Charter', 'Your shop is now a chartered house of trade. Your name goes on the guild roll in brass letters. Keep trading as long as you like.', 'Keep trading', () => {});
+  sfx('coin');
+}
+function gameOver(){
+  S.phase = 'over'; clearSave();
+  showModal(`Day ${S.day}`, 'The Guild seized the shop', `Three nights in debt was all the Guild would allow. You sold ${S.totals.sales} items, and your best sale fetched ${S.totals.best}g.`, 'Start a new shop', () => newGame());
+}
+function showModal(eyebrow, title, text, btn, fn){
+  setText($('#mEyebrow'), eyebrow); setText($('#mTitle'), title); setText($('#mText'), text); setText($('#mBtn'), btn);
+  const m = $('#modal'); m.hidden = false;
+  $('#mBtn').onclick = () => { m.hidden = true; fn(); };
+}
+
+/* ---------------- HUD ---------------- */
+function updateHUD(){
+  if(!S) return;
+  if(S.phase === 'intro'){ setText($('#hudDay'), 'Day 1'); setText($('#hudTod'), 'Before opening'); setText($('#hudGold'), String(S.gold)); $('#hudRep').style.width = (S.rep/5*100)+'%'; return; }
+  setText($('#hudDay'), S.phase === 'day' ? `Day ${S.day}` : `Night ${S.day}`);
+  let tod = 'Shop closed';
+  if(S.phase === 'day'){ const p = R.total ? R.done/R.total : 0; tod = p < 0.25 ? 'Morning' : p < 0.5 ? 'Midday' : p < 0.75 ? 'Afternoon' : 'Dusk'; }
+  setText($('#hudTod'), tod);
+  setText($('#hudGold'), Math.round(S.gold).toLocaleString('en-US'));
+  $('#hudGoldWrap').classList.toggle('neg', S.gold < 0);
+  $('#hudRep').style.width = (S.rep/5*100) + '%';
+  $('#hudRepWrap').setAttribute('aria-label', `Reputation ${S.rep.toFixed(1)} of 5`);
+  $('#hudProg').style.width = (S.phase === 'day' && R.total ? (R.done/R.total*100) : 100) + '%';
+}
+function updateDock(){
+  if(!S || S.phase !== 'day') return;
+  setText($('#dockCount'), `${Math.min(R.spawned, R.total)} / ${R.total} visitors`);
+  let txt = 'Waiting for the door bell.';
+  const at = R.customers.find(c => !c.leaving && c === R.counter);
+  const br = R.customers.find(c => !c.leaving && c !== R.counter && c !== R.wait);
+  if(R.wait && !R.wait.leaving) txt = `${R.wait.name} is waiting to be served.`;
+  else if(at) txt = `${at.name} is coming to the counter.`;
+  else if(br) txt = br.seller ? `${br.name} the ${br.a.label.toLowerCase()} has something to sell.` : `${br.name} the ${br.a.label.toLowerCase()} is browsing.`;
+  else if(R.spawned >= R.total) txt = 'That was the last of them.';
+  setText($('#dockText'), txt);
+}
+
+/* ---------------- loop ---------------- */
+function tick(dt){
+  R.time += dt;
+  for(let i=R.timers.length-1;i>=0;i--){ const tm = R.timers[i]; tm.t -= dt; if(tm.t <= 0){ R.timers.splice(i,1); tm.fn(); } }
+  if(S && S.phase === 'day' && !R.ending){
+    if(R.spawned < R.total && activeCount() < 2 && R.time >= R.nextSpawn){ spawnCustomer(); R.nextSpawn = R.time + rnd(2.6,5.2); }
+    if(R.spawned >= R.total && R.customers.length === 0 && !R.haggle){ R.ending = true; toast('The last customer has gone. Time to close up.'); later(1.8, enterNight); }
+  }
+  for(let i=R.customers.length-1;i>=0;i--){
+    const c = R.customers[i]; updateChar(c, dt);
+    if(c.dying){ c.spawnK -= dt*3; if(c.spawnK <= 0){ scene.remove(c.g); c.bubble.remove(); R.customers.splice(i,1); updateHUD(); continue; } }
+    else c.spawnK = Math.min(1, c.spawnK + dt*3);
+    c.g.scale.setScalar(Math.max(0.01, c.baseScale*c.spawnK));
+  }
+  // keeper
+  keeper.t += dt; const kp = keeper.parts;
+  if(keeper.jump > 0){ keeper.jump -= dt; }
+  kp.w.position.y = (keeper.jump > 0 ? Math.sin((0.5-keeper.jump)/0.5*Math.PI)*0.12 : 0) + Math.sin(keeper.t*2)*0.01;
+  kp.armR.rotation.x = R.haggle ? -0.5 + Math.sin(keeper.t*3)*0.08 : Math.sin(keeper.t*1.3)*0.05;
+  kp.armL.rotation.x = R.haggle ? -0.3 : 0;
+  if(keeper.sayT > 0){ keeper.sayT -= dt; if(keeper.sayT <= 0) keeper.bubble.hidden = true; }
+  // cat
+  if(cat.g.visible) updateCat(dt);
+  // shelf items
+  for(const m of R.slotMesh){ if(!m) continue; animItem(m, dt); }
+  if(R.counterItem) animItem(R.counterItem, dt);
+  // coins
+  for(let i=R.coins.length-1;i>=0;i--){ const c = R.coins[i], u = c.userData; u.life -= dt; u.v.y -= 9*dt; c.position.addScaledVector(u.v, dt); c.rotation.x += u.spin*dt; c.rotation.z += u.spin*0.6*dt; if(u.life <= 0){ scene.remove(c); R.coins.splice(i,1); } }
+  // dust
+  const pa = dust.geometry.attributes.position, arr = pa.array;
+  for(let i=0;i<arr.length;i+=3){ arr[i] += dt*0.06; arr[i+1] += Math.sin(R.time*0.7 + i)*dt*0.03; if(arr[i] > 4.6) arr[i] = -4.6; }
+  pa.needsUpdate = true;
+  // light
+  const tp = (!S || S.phase === 'intro') ? 0.15 : S.phase === 'day' ? (R.total ? 0.05 + 0.9*(R.done/R.total) : 0.05) : 1;
+  const tn = S && (S.phase === 'night' || S.phase === 'over') ? 1 : 0;
+  R.lightProg += (tp - R.lightProg)*Math.min(1, dt*0.9); R.nightK += (tn - R.nightK)*Math.min(1, dt*1.2);
+  applyLighting(R.lightProg, R.nightK);
+  updateCamera(dt);
+  // bubbles
+  for(const c of R.customers) placeBubble(c);
+  placeBubble(keeper);
+  if(Math.floor(R.time*4) !== Math.floor((R.time-dt)*4)){ updateDock(); updateHUD(); }
+}
+const bp = new THREE.Vector3();
+function placeBubble(ch){
+  if(ch.bubble.hidden) return;
+  bp.copy(ch.g.position); bp.y += ch.headY + 0.25;
+  const [x,y,z] = toScreen(bp);
+  ch.bubble.style.transform = `translate(${x.toFixed(1)}px,${y.toFixed(1)}px) translate(-50%,-100%)`;
+  ch.bubble.style.visibility = z > 1 ? 'hidden' : 'visible';
+}
+function animItem(m, dt){
+  if(m.userData.pop != null && m.userData.pop < 1){ m.userData.pop = Math.min(1, m.userData.pop + dt*3.2); const x = m.userData.pop - 1; m.scale.setScalar(Math.max(0.01, 1 + 2.7*x*x*x + 1.7*x*x)); }
+  if(m.userData.spin) m.userData.spin.rotation.y += dt*1.2;
+}
+function updateCat(dt){
+  cat.t += dt; const g = cat.g;
+  if(cat.target){
+    const dx = cat.target.x - g.position.x, dz = cat.target.z - g.position.z, d = Math.hypot(dx,dz), st = 0.75*dt;
+    if(d <= st){ cat.target = null; cat.sitT = rnd(3,8); }
+    else { g.position.x += dx/d*st; g.position.z += dz/d*st; cat.faceY = Math.atan2(dx,dz); }
+    cat.body.scale.y = 1; g.position.y = Math.abs(Math.sin(cat.t*12))*0.015;
+  } else {
+    cat.sitT -= dt; cat.body.scale.y = 0.85; g.position.y = 0;
+    if(cat.sitT <= 0){ const spots = [V(-1.2,0,0.6),V(-3.2,0,-0.6),V(0.6,0,0.3),V(-2.3,0,1.6),V(1.6,0,-1.4),V(-0.4,0,1.7)]; cat.target = pick(spots); }
+  }
+  let diff = cat.faceY - g.rotation.y; diff = Math.atan2(Math.sin(diff), Math.cos(diff)); g.rotation.y += diff*Math.min(1, dt*6);
+  cat.tail.rotation.z = Math.sin(cat.t*3)*0.4;
+  cat.head.rotation.y = Math.sin(cat.t*0.7)*0.4;
+}
+let lastT = performance.now();
+function frame(now){
+  requestAnimationFrame(frame);
+  const dt = Math.min(0.05, Math.max(0, (now - lastT)/1000)); lastT = now;
+  tick(dt); renderer.render(scene, camera);
+}
+
+/* ---------------- game flow ---------------- */
+function newGame(){
+  clearSave(); clearCustomers(); S = newState(); R.firstHaggles = 0;
+  applyUpgrades(); $('#intro').hidden = true; beginDay(); sfx('bell');
+}
+function continueGame(s){
+  clearCustomers(); S = s; if(!S.next) genNext(); S.phase = 'night';
+  applyUpgrades(); $('#intro').hidden = true; updateHUD(); showNight('market');
+}
+function renderIntro(){
+  const box = $('#introActions'); const saved = loadSave();
+  if(saved){
+    box.innerHTML = `<button class="btn primary wide" id="btnCont">Continue · Night ${saved.day}</button><button class="btn ghost wide" id="btnNew">Start a new shop</button>`;
+    $('#btnCont').onclick = () => { audio(); continueGame(saved); };
+    let armed = false;
+    $('#btnNew').onclick = e => { if(!armed){ armed = true; e.target.className = 'btn danger wide'; e.target.textContent = 'Tap again to close the old shop for good'; return; } audio(); newGame(); };
+  } else {
+    box.innerHTML = `<button class="btn primary wide" id="btnStart">Open the shop</button>`;
+    $('#btnStart').onclick = () => { audio(); newGame(); };
+  }
+}
+function wireUI(){
+  paintSound();
+  $('#soundBtn').onclick = () => { soundOn = !soundOn; try{ localStorage.setItem('hollowmere-sound', soundOn?'on':'off'); }catch(e){} paintSound(); if(soundOn){ audio(); sfx('coin'); } };
+  document.querySelectorAll('.step').forEach(b => b.addEventListener('click', () => nudge(+b.dataset.d)));
+  $('#hgSlider').addEventListener('input', e => { if(R.haggle){ R.haggle.price = +e.target.value; updateHaggle(); } });
+  $('#hgOffer').onclick = offer; $('#hgTake').onclick = takeCounter; $('#hgRefuse').onclick = () => walkout(false);
+  document.querySelectorAll('.tabs button').forEach(b => b.onclick = () => { nightTab = b.dataset.tab; $('#nightBody').scrollTop = 0; showNight(nightTab); });
+  $('#nightBody').addEventListener('click', e => {
+    const b = e.target.closest('button'); if(!b || b.disabled) return;
+    if(b.dataset.buy) buyStock(b.dataset.buy); else if(b.dataset.up) buyUpgrade(b.dataset.up);
+  });
+  $('#openBtn').onclick = () => { if(S && S.phase === 'night') openShop(); };
+  window.addEventListener('pointerdown', () => audio(), {once:true});
+  window.addEventListener('resize', layout);
+  if(window.ResizeObserver){ const ro = new ResizeObserver(() => layout()); ['#hud','#dock','#haggle','#night'].forEach(s => ro.observe($(s))); }
+}
+
+function start(data){
+  wireUI();
+  try{
+    renderer = new THREE.WebGLRenderer({canvas:$('#scene'), antialias:true, powerPreference:'high-performance'});
+  }catch(e){ $('#glErr').hidden = false; return; }
+  renderer.setPixelRatio(Math.min(devicePixelRatio||1, 2));
+  renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  camera = new THREE.PerspectiveCamera(FOV, 1, 0.1, 300); fitCam = new THREE.PerspectiveCamera(FOV, 1, 0.1, 300);
+  makeIcons();
+  buildScene();
+  S = newState(); applyUpgrades(); S.phase = 'intro';
+  layout(); computeFraming();
+  updateHUD(); setText($('#hudTod'), 'Before opening');
+  if(data && data.save && data.save.v === 1){ continueGame(data.save); }
+  else renderIntro();
+  requestAnimationFrame(t => { lastT = t; frame(t); });
+}
+if(window.claude && window.claude.hot && window.claude.hot.snapshot){
+  window.claude.hot.snapshot(() => (S && S.phase !== 'intro' && S.phase !== 'over' && S.next) ? {save: JSON.parse(JSON.stringify(S))} : {});
+}
+window.claude?.hot?.ready ? window.claude.hot.ready(start) : start(window.claude?.hot?.data ?? {});
+})();
+</script>
+</body>
+</html>
