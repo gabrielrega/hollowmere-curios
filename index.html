@@ -162,7 +162,7 @@ input[type=range]{width:100%;accent-color:var(--brass);height:30px;margin:6px 0 
 #night .sheet-in{display:flex;flex-direction:column;min-height:0;flex:1 1 auto;width:100%;gap:12px}
 .night-head{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:10px}
 .tabs{display:flex;background:var(--ink);border:1px solid var(--line);border-radius:12px;padding:3px;gap:2px}
-.tabs button{border:0;background:transparent;padding:8px 11px;border-radius:9px;font-weight:700;font-size:14px;color:var(--muted);cursor:pointer}
+.tabs button{border:0;background:transparent;padding:8px 9px;border-radius:9px;font-weight:700;font-size:13.5px;color:var(--muted);cursor:pointer}
 .tabs button[aria-selected=true]{background:var(--panel-hi);color:var(--brass)}
 .night-body{overflow-y:auto;min-height:0;flex:1 1 auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;margin:0 -6px;padding:0 6px}
 .ledger{display:grid;grid-template-columns:1fr auto;gap:0;margin:0}
@@ -193,14 +193,47 @@ input[type=range]{width:100%;accent-color:var(--brass);height:30px;margin:6px 0 
 .ucard p{grid-column:1;margin:0;font-size:13px;color:var(--muted);text-wrap:pretty}
 .ucard .btn{grid-row:1 / span 2;grid-column:2;min-height:44px;font-size:14px}
 
+/* Moods, timers, tags, reputation */
+button.stars{pointer-events:auto;background:none;border:0;padding:8px 2px;margin:0;cursor:pointer;font-size:15px;color:inherit}
+.tell{margin:-4px 0 10px;font-size:13.5px;color:var(--muted);display:flex;gap:7px;align-items:center;font-style:italic}
+.tell svg{width:16px;height:16px;flex:none}
+.clock{height:4px;border-radius:2px;background:var(--v-tint-bad);margin:-4px 0 12px;overflow:hidden}
+.clock i{display:block;height:100%;width:100%;background:var(--rose)}
+button.stars .s-fg{left:2px;top:8px}
+.tithe{margin:8px 0 0;font-size:13px;color:var(--muted)}
+.tithe b{color:var(--parch)}
+.tithe.due b{color:var(--rose)}
+.rumor{line-height:1.45}
+.trow{display:grid;grid-template-columns:46px minmax(0,1fr);gap:8px 10px;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+.trow.empty{opacity:.55}
+.notes{display:flex;flex-wrap:wrap;align-items:flex-start;gap:4px;margin-top:5px}
+.m-name .nchip{display:inline-block;font-size:11px;line-height:18px;height:18px;font-weight:800;padding:0 7px;border-radius:999px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.nchip.buy{color:var(--leaf);background:var(--v-tint-good)}
+.nchip.haggle{color:var(--brass);background:rgba(227,181,94,.12)}
+.nchip.no{color:var(--rose);background:var(--v-tint-bad)}
+.tagctl{grid-column:1 / -1;display:flex;align-items:center;gap:6px}
+.tagctl .step{width:46px;height:42px;font-size:14px}
+.tagctl output{flex:1;min-width:0;text-align:center;font-family:var(--f-display);font-size:26px;line-height:1;color:var(--brass);font-variant-numeric:tabular-nums}
+.tagctl output small{display:block;font-family:var(--f-body);font-size:11.5px;color:var(--muted);margin-top:3px}
+.repnow{font-size:15px}
+.repnow b{color:var(--brass)}
+.tiers{list-style:none;margin:0 0 16px;padding:0;display:grid;gap:9px}
+.tiers li{display:grid;grid-template-columns:44px 1fr;gap:10px;font-size:14.5px;align-items:baseline;color:var(--muted)}
+.tiers li b{font-family:var(--f-display);font-weight:400;font-size:18px;color:var(--muted)}
+.tiers li.on{color:var(--parch)}
+.tiers li.on b{color:var(--brass)}
+.moves{display:grid;grid-template-columns:1fr auto;font-size:13.5px;margin:4px 0 0}
+.moves dt,.moves dd{margin:0;padding:6px 0;border-bottom:1px solid var(--line)}
+.moves dd{text-align:right;font-weight:800;font-variant-numeric:tabular-nums}
+
 /* Overlays */
 .overlay{position:fixed;inset:0;z-index:30;display:grid;place-items:center;overflow-y:auto;background:var(--scrim);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);padding-top:calc(env(safe-area-inset-top,0px) + 20px);padding-bottom:calc(env(safe-area-inset-bottom,0px) + 20px);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .card{width:100%;max-width:440px;background:var(--panel);border:1px solid var(--brass-deep);outline:1px solid rgba(227,181,94,.2);outline-offset:-8px;border-radius:22px;padding:26px 22px 22px;box-shadow:0 24px 60px rgba(0,0,0,.5);animation:rise .35s ease-out}
 .card h1{font-family:var(--f-display);font-weight:400;font-size:40px;line-height:.98;color:var(--brass);margin:6px 0 12px;text-wrap:balance}
 .card p{margin:0 0 12px;font-size:15.5px;text-wrap:pretty}
 .card ol{margin:0 0 14px;padding:0;list-style:none;display:grid;gap:8px;counter-reset:s}
-.card li{counter-increment:s;display:grid;grid-template-columns:24px 1fr;gap:8px;font-size:14.5px;color:var(--parch)}
-.card li::before{content:counter(s);font-family:var(--f-display);color:var(--brass);font-size:18px;line-height:1.1}
+.card ol li{counter-increment:s;display:grid;grid-template-columns:24px 1fr;gap:8px;font-size:14.5px;color:var(--parch)}
+.card ol li::before{content:counter(s);font-family:var(--f-display);color:var(--brass);font-size:18px;line-height:1.1}
 .goal{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:10px}
 .card-actions{display:grid;gap:8px;margin-top:16px}
 .err{color:var(--rose)}
@@ -218,7 +251,7 @@ input[type=range]{width:100%;accent-color:var(--brass);height:30px;margin:6px 0 
     <div class="hud-day"><span class="day" id="hudDay">Day 1</span><span class="tod" id="hudTod">Morning</span></div>
     <div class="hud-right">
       <div class="gold" id="hudGoldWrap" aria-label="Gold"><svg class="coin" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="7.2" fill="var(--brass)"/><circle cx="8" cy="8" r="4.6" fill="none" stroke="var(--brass-deep)" stroke-width="1.4"/></svg><span id="hudGold">60</span></div>
-      <span class="stars" aria-label="Reputation" id="hudRepWrap"><span class="s-bg">★★★★★</span><span class="s-fg" id="hudRep">★★★★★</span></span>
+      <button class="stars" aria-label="Reputation. Show what it does." id="hudRepWrap"><span class="s-bg" aria-hidden="true">★★★★★</span><span class="s-fg" id="hudRep" aria-hidden="true">★★★★★</span></button>
       <button class="icon-btn" id="soundBtn" aria-label="Sound on"></button>
     </div>
   </div>
@@ -234,6 +267,7 @@ input[type=range]{width:100%;accent-color:var(--brass);height:30px;margin:6px 0 
       <div class="count" id="dockCount">0 / 5</div>
     </div>
     <p class="last" id="dockLast" hidden></p>
+    <p class="tithe" id="dockTithe"></p>
     <p class="rumor" id="dockRumor" hidden></p>
   </div>
 </section>
@@ -245,8 +279,10 @@ input[type=range]{width:100%;accent-color:var(--brass);height:30px;margin:6px 0 
       <div class="pat-wrap"><span class="eyebrow">Patience</span><div class="patience" id="hgPat"></div></div>
     </div>
     <p class="quote" id="hgQuote"></p>
+    <p class="tell"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg><span id="hgTellText"></span></p>
     <p class="hg-status" id="hgStatus" hidden></p>
-    <p class="coach" id="hgCoach" hidden>Start high, then come down. Every counter-offer is below what they will really pay.</p>
+    <div class="clock" id="hgClock" hidden aria-hidden="true"><i></i></div>
+    <p class="coach" id="hgCoach" hidden>Your tag is your opening ask. Counter-offers are always below what they'll really pay, but their offer shrinks if you stall, and raising your price angers them.</p>
     <div class="hg-item">
       <span class="icon" id="hgIcon"></span>
       <div class="hg-item-text"><b id="hgItem"></b><span id="hgVal"></span></div>
@@ -277,6 +313,7 @@ input[type=range]{width:100%;accent-color:var(--brass);height:30px;margin:6px 0 
       <div class="tabs" role="tablist">
         <button role="tab" data-tab="ledger" id="tab-ledger">Ledger</button>
         <button role="tab" data-tab="market" id="tab-market">Market</button>
+        <button role="tab" data-tab="shelves" id="tab-shelves">Shelves</button>
         <button role="tab" data-tab="workshop" id="tab-workshop">Workshop</button>
       </div>
     </div>
@@ -291,13 +328,22 @@ input[type=range]{width:100%;accent-color:var(--brass);height:30px;margin:6px 0 
     <h1>Hollowmere Curios</h1>
     <p>Aunt Wren left you her shop, eight shelves of odds and ends, and a standing debt to the Merchants' Guild. Adventurers pass through every day on their way to somewhere worse.</p>
     <ol>
-      <li>Customers take something off your shelves and bring it to the counter. You name the price.</li>
-      <li>Every counter-offer is less than they will really pay. Push too hard and they storm out.</li>
-      <li>At night, restock from the market and pay your guild dues. Tavern gossip moves tomorrow's prices.</li>
+      <li>Put a price tag on everything you stock. Customers pay a fair tag, haggle over a steep one, and put back a greedy one.</li>
+      <li>Every counter-offer is less than they'll really pay. Read their mood: they won't wait forever, and they hate it when you raise your price.</li>
+      <li>Each night, restock and set tags. Upkeep is due daily and the Guild's tithe every seventh night. Tavern gossip moves tomorrow's prices.</li>
     </ol>
     <p class="goal">Reach 2,000 gold to earn the Guild Charter.</p>
     <p class="err" id="glErr" hidden>Your browser could not start 3D graphics (WebGL), so the shop cannot open here.</p>
     <div class="card-actions" id="introActions"></div>
+  </div>
+</div>
+
+<div id="repCard" class="overlay" hidden>
+  <div class="card">
+    <span class="eyebrow">Reputation</span>
+    <h1>Word on the road</h1>
+    <div id="repBody"></div>
+    <div class="card-actions"><button class="btn primary wide" id="repClose">Close</button></div>
   </div>
 </div>
 
@@ -391,7 +437,44 @@ const LINES = {
   sellInsult:['An insult! {c}g or I walk.','You jest. {c}g.'],
   warn:['My patience wears thin.','Last chance.',"Don't push me."],
 };
+LINES.tagOpen = ['Bit steep for me.','Will you come down?','Surely that is negotiable.','Steep, but I am listening.'];
+LINES.raised = ['You asked {c}g a moment ago!','Now it goes up? You said {c}g!'];
+LINES.overTag = ['Your own tag says {c}g!','The tag reads {c}g, shopkeeper.'];
+LINES.lowered = ['You offered {c}g a moment ago!','Now you go lower? You said {c}g!'];
+LINES.stallBuy = ['Well? Now it is {c}g.','I have not got all day. {c}g, then.','My offer is shrinking: {c}g.'];
+LINES.stallSell = ['Well? Now I want {c}g.','Time is money. {c}g now.','Make up your mind. {c}g.'];
 const fill = (s,t,c) => s.replace('{item}', ITEMS[t].name).replace('{c}', c);
+
+/* Hidden customer moods. wtp: budget multiplier · tol: how far over budget a tag can be before "too dear" ·
+   first/concede: counter-offer behaviour · insult: ask/budget ratio that costs double patience · clock: seconds a counter stands */
+const MOODS = {
+  eager:{label:'Eager', wtp:1.15, tol:1.45, first:[0.75,0.88], concede:[0.5,0.7], insult:1.6, pat:0, clock:9, sellAsk:0.85,
+    tells:['Keeps glancing at the {item}.','Already has a purse out.','Hums while they wait.']},
+  steady:{label:'Steady', wtp:1, tol:1.35, first:[0.66,0.8], concede:[0.35,0.55], insult:1.5, pat:0, clock:8, sellAsk:1,
+    tells:['Looks the {item} over carefully.','Waits politely.','Weighs the {item} in one hand.']},
+  tight:{label:'Tight-fisted', wtp:0.85, tol:1.25, first:[0.55,0.7], concede:[0.2,0.4], insult:1.4, pat:1, clock:10, sellAsk:1.15,
+    tells:['Counts their coins twice.','Purse looks thin.','Winces at the price tag.']},
+  proud:{label:'Proud', wtp:1.12, tol:1.25, first:[0.7,0.82], concede:[0.3,0.5], insult:1.3, pat:-1, clock:6, sellAsk:1.1,
+    tells:['Taps a foot, impatient.','Sniffs at the shop.','Does not like to be kept waiting.']},
+};
+const EVENTS = {
+  festival:{text:'Harvest festival in the square tomorrow.', today:'Harvest festival. More visitors, and they spend freely.', effect:'3 more visitors, budgets 10% higher', visitors:3, wtp:1.1},
+  storm:{text:'A storm is rolling in from the coast.', today:'Storm outside. Fewer visitors brave the road.', effect:'2 fewer visitors', visitors:-2},
+  party:{text:'A party is back from the Barrowdeep, pockets full of loot.', today:'Adventurers back from the Barrowdeep with loot to sell.', effect:'more sellers, 1 more visitor', visitors:1, sellers:0.4},
+  retinue:{text:"Lady Corvane's retinue passes through tomorrow.", today:"Lady Corvane's retinue is in town. Expect nobles.", effect:'2 more visitors, mostly nobles', visitors:2, nobles:true},
+};
+const REP_TIERS = [
+  {at:1.5, text:'Nobles start visiting.'},
+  {at:3, text:'Every customer has one more round of patience.'},
+  {at:4, text:'The Guild cuts your tithe by 15%.'},
+  {at:5, text:'Customers trust your tags and accept prices 10% higher before calling them too dear.'},
+];
+const REP_MOVES = [
+  ['Sale at or below the fair price','+0.09'],['Any other sale','+0.04'],
+  ['Buying from a seller at a fair price','+0.08'],['Buying cheap from a seller','+0.03'],
+  ['Tag too dear, item put back','−0.02'],['Item asked for is out of stock','−0.02'],
+  ['Sending a customer away','−0.03'],['Customer storms out','−0.15'],
+];
 
 /* ---------------- state ---------------- */
 const KEY = 'hollowmere-curios-v1';
@@ -400,10 +483,20 @@ function newState(){
   const s = {v:1, day:1, gold:60, rep:1, slots:Array(16).fill(null), upgrades:{}, market:{}, rumors:[], next:null, nextRumors:[], debtNights:0, won:false, lastLedger:null, today:null, totals:{sales:0,revenue:0,best:0}, phase:'day'};
   for(const t of TYPES) s.market[t] = {w:1, d:1};
   ['potion','potion','elixir','shield','potion','elixir','sword','scroll'].forEach((t,i)=> s.slots[i] = {type:t, cost:Math.round(ITEMS[t].base*0.6)});
+  return migrate(s);
+}
+const defaultTag = t => Math.round(ITEMS[t].base * 1.2);
+/* Fill in fields added after the first release, so older saves keep working. */
+function migrate(s){
+  if(!s.tags) s.tags = {};
+  for(const t of TYPES) if(!(s.tags[t] > 0)) s.tags[t] = defaultTag(t);
+  if(!s.notes) s.notes = {};
+  if(!('event' in s)) s.event = null;
+  if(!('nextEvent' in s)) s.nextEvent = null;
   return s;
 }
 function save(){ try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){} }
-function loadSave(){ try{ const raw = localStorage.getItem(KEY); if(!raw) return null; const s = JSON.parse(raw); return (s && s.v===1 && s.next) ? s : null; }catch(e){ return null; } }
+function loadSave(){ try{ const raw = localStorage.getItem(KEY); if(!raw) return null; const s = JSON.parse(raw); return (s && s.v===1 && s.next) ? migrate(s) : null; }catch(e){ return null; } }
 function clearSave(){ try{ localStorage.removeItem(KEY); }catch(e){} }
 
 const fair = t => Math.max(1, Math.round(ITEMS[t].base * ((S.market[t] && S.market[t].d) || 1)));
@@ -414,7 +507,7 @@ function freeSlot(){ for(let i=0;i<16;i++) if(unlocked(i) && !S.slots[i]) return
 function freeCount(){ let n=0; for(let i=0;i<16;i++) if(unlocked(i) && !S.slots[i]) n++; return n; }
 function stockOf(t){ let n=0; for(let i=0;i<16;i++) if(unlocked(i) && S.slots[i] && S.slots[i].type===t) n++; return n; }
 
-const R = { customers:[], counter:null, wait:null, spawned:0, total:0, done:0, nextSpawn:0, haggle:null, time:0, mode:'room', ending:false, timers:[], reserved:Array(16).fill(false), slotMesh:Array(16).fill(null), coins:[], lightProg:0.15, nightK:0, counterItem:null, firstHaggles:0 };
+const R = { customers:[], counter:null, wait:null, spawned:0, total:0, done:0, nextSpawn:0, haggle:null, time:0, mode:'room', ending:false, timers:[], reserved:Array(16).fill(false), taken:Array(16).fill(false), tagSprite:Array(16).fill(null), slotMesh:Array(16).fill(null), coins:[], lightProg:0.15, nightK:0, counterItem:null, firstHaggles:0 };
 function later(t, fn){ R.timers.push({t, fn}); }
 
 /* ---------------- audio ---------------- */
@@ -709,7 +802,7 @@ function buildScene(){
   for(const [ui,k] of ['A','B','C','D'].entries()){
     const u = makeShelfUnit(); u.position.set(...UNITS[k].pos); u.rotation.y = UNITS[k].rot; scene.add(u); unitGroups[k] = u; u.updateMatrixWorld(true);
     SLOT_LOCAL.forEach(([x,y],j) => {
-      SLOTS[ui*4+j] = { pos: V(x,y,0.02).applyMatrix4(u.matrixWorld), stand: V(x,0,1.2).applyMatrix4(u.matrixWorld), rot: UNITS[k].rot };
+      SLOTS[ui*4+j] = { pos: V(x,y,0.02).applyMatrix4(u.matrixWorld), stand: V(x,0,1.2).applyMatrix4(u.matrixWorld), tagPos: V(x,y-0.065,0.28).applyMatrix4(u.matrixWorld), rot: UNITS[k].rot };
     });
   }
 
@@ -782,7 +875,12 @@ function buildScene(){
   dust = new THREE.Points(dg, new THREE.PointsMaterial({color:0xffe3a6, size:0.035, transparent:true, opacity:0.5, depthWrite:false}));
   scene.add(dust);
 
-  if(document.fonts && document.fonts.ready) document.fonts.ready.then(()=>{ drawSign(); drawChalk(); });
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(()=>{
+    drawSign(); drawChalk();
+    tagTexCache.forEach(t => t.dispose()); tagTexCache.clear();
+    R.tagSprite.forEach(s => { if(s) s.userData.p = null; });
+    if(S) refreshShelves();
+  });
 }
 
 function applyUpgrades(){
@@ -801,8 +899,33 @@ function refreshShelves(){
       const it = buildItem(want); it.userData.type = want; it.position.copy(SLOTS[i].pos); it.rotation.y = SLOTS[i].rot + rnd(-0.25,0.25);
       scene.add(it); R.slotMesh[i] = it;
     }
-    if(R.slotMesh[i]) R.slotMesh[i].visible = !R.reserved[i];
+    if(R.slotMesh[i]) R.slotMesh[i].visible = !R.taken[i];
+    updateTag(i);
   }
+}
+/* Little parchment price tags hanging off the shelf lip under each item. */
+const tagTexCache = new Map();
+function tagTex(p){
+  let t = tagTexCache.get(p); if(t) return t;
+  t = canvasTex(128,64,(x,W,H)=>{
+    const r = 14, m = 4;
+    x.beginPath(); x.moveTo(m+r,m); x.arcTo(W-m,m,W-m,H-m,r); x.arcTo(W-m,H-m,m,H-m,r); x.arcTo(m,H-m,m,m,r); x.arcTo(m,m,W-m,m,r); x.closePath();
+    x.fillStyle = '#efe5cd'; x.fill(); x.lineWidth = 4; x.strokeStyle = '#9c7432'; x.stroke();
+    x.fillStyle = '#2a2116'; x.textAlign = 'center'; x.textBaseline = 'middle';
+    x.font = '800 36px "Alegreya Sans", "Gill Sans", sans-serif'; x.fillText(p + 'g', W/2, H/2 + 2);
+  });
+  tagTexCache.set(p, t); return t;
+}
+function updateTag(i){
+  const m = R.slotMesh[i]; let s = R.tagSprite[i];
+  if(!m){ if(s) s.visible = false; return; }
+  if(!s){
+    s = new THREE.Sprite(new THREE.SpriteMaterial({map:tagTex(1), transparent:true, depthWrite:false}));
+    s.scale.set(0.36,0.18,1); s.position.copy(SLOTS[i].tagPos); scene.add(s); R.tagSprite[i] = s;
+  }
+  const p = S.tags[m.userData.type];
+  if(s.userData.p !== p){ s.material.map = tagTex(p); s.material.needsUpdate = true; s.userData.p = p; }
+  s.visible = m.visible;
 }
 function popMesh(m){ if(!m) return; m.userData.pop = 0; m.scale.setScalar(0.01); }
 function placeItem(i, t, cost){ S.slots[i] = {type:t, cost}; refreshShelves(); popMesh(R.slotMesh[i]); }
@@ -907,11 +1030,32 @@ const activeCount = () => R.customers.filter(c => !c.leaving).length;
 
 function findSlotOf(t){ const a = []; for(let i=0;i<16;i++) if(unlocked(i) && S.slots[i] && S.slots[i].type===t && !R.reserved[i]) a.push(i); return a.length ? pick(a) : -1; }
 
+const ev = () => (S && S.event && EVENTS[S.event]) || {};
+function pickMood(ak){
+  const w = {eager:1, steady:2, tight:1, proud:1};
+  if(ak==='noble') w.proud += 2.5;
+  if(ak==='farmer') w.tight += 2;
+  if(ak==='knight') w.proud += 0.6;
+  if(ak==='mage') w.steady += 1;
+  if(ak==='ranger') w.eager += 0.6;
+  if(ak==='goblin') w.eager += 1.5;
+  return wpick(w);
+}
+/* A tell is honest 70% of the time; otherwise it hints at a random mood. */
+function tellFor(c, t){ const m = Math.random() < 0.7 ? c.mood : pick(Object.keys(MOODS)); return fill(pick(MOODS[m].tells), t); }
+function wtpFor(c, t){
+  return Math.max(2, Math.round(fair(t) * c.a.wealth * rnd(0.88,1.22) * MOODS[c.mood].wtp * (1+0.03*S.rep) * (S.upgrades.cat?1.05:1) * (ev().wtp||1)));
+}
+const tolFor = c => MOODS[c.mood].tol + (S.rep >= 5 ? 0.1 : 0);
+const repStr = dr => `Reputation ${dr >= 0 ? '+' : '−'}${Math.abs(dr).toFixed(2)}★`;
+
 function spawnCustomer(){
   const w = {knight:3, mage:2.5, ranger:3, farmer:Math.max(1, 3.5 - S.rep*0.45), dwarf:2, goblin:1.1};
   if(S.rep >= 1.5) w.noble = 0.6 + S.rep*0.45;
+  if(ev().nobles) w.noble = (w.noble||0) + 5;
   const ak = wpick(w), a = ARCH[ak];
-  const c = { id:++cid, ak, a, name:pick(a.names), seller: a.sell>=1 || Math.random()<a.sell, path:[], onArrive:null, speed:1.75, t:Math.random()*10, faceY:0, walkK:0, spawnK:0, baseScale:a.scale||1, leaving:false, dying:false, waitT:0, after:null, sayT:0, slot:-1 };
+  const sellP = a.sell >= 1 ? 1 : a.sell + (ev().sellers||0);
+  const c = { id:++cid, ak, a, name:pick(a.names), mood:pickMood(ak), seller: Math.random() < sellP, path:[], onArrive:null, speed:1.75, t:Math.random()*10, faceY:0, walkK:0, spawnK:0, baseScale:a.scale||1, leaving:false, dying:false, waitT:0, after:null, sayT:0, slot:-1 };
   const ch = makeCharacter(a); c.g = ch.g; c.parts = ch; c.headY = 1.2*c.baseScale;
   c.g.position.copy(STREET); c.g.scale.setScalar(0.01); scene.add(c.g);
   c.bubble = makeBubble();
@@ -933,7 +1077,7 @@ function decide(c){
     if(Object.keys(avail).length && Math.random() < 0.5){
       idx = findSlotOf(wpick(avail)); say(c, `No ${ITEMS[want].name}? Hm.`, 2.2);
     } else {
-      say(c, `No ${ITEMS[want].name}?`, 2.4);
+      say(c, `No ${ITEMS[want].name}?`, 2.4, 'meh');
       toast(`<b>${c.name}</b> wanted ${art(ITEMS[want].name)}. None on your shelves.`);
       walk(c, [V(-2.2,0,0.7)], () => { c.waitT = 1.3; c.after = () => leave(c); });
       return;
@@ -941,10 +1085,30 @@ function decide(c){
   }
   c.slot = idx; R.reserved[idx] = true;
   walk(c, [SLOTS[idx].stand], () => {
-    faceTo(c, SLOTS[idx].pos); c.waitT = 0.9;
-    c.after = () => { c.itemType = S.slots[idx].type; if(R.slotMesh[idx]) R.slotMesh[idx].visible = false; attachCarry(c, c.itemType); sfx('pop'); requestCounter(c); };
+    faceTo(c, SLOTS[idx].pos); c.waitT = 1.0;
+    c.after = () => judgeTag(c, idx);
   });
 }
+/* The customer reads your price tag: pay it, haggle over it, or put the item back. */
+function judgeTag(c, idx){
+  const t = S.slots[idx].type, tag = S.tags[t];
+  c.itemType = t; c.wtp = wtpFor(c, t);
+  if(tag <= c.wtp){
+    c.deal = 'tag'; takeFromShelf(c, idx); noteTag(t, tag, 'buy');
+    say(c, pick(['Worth it!','Fair price.','Just right.']), 2.2, 'good'); requestCounter(c);
+  } else if(tag <= c.wtp * tolFor(c)){
+    c.deal = 'haggle'; takeFromShelf(c, idx); noteTag(t, tag, 'haggle');
+    say(c, pick(['Bit steep…','Hmm, pricey.','We can talk.']), 2.2); requestCounter(c);
+  } else {
+    noteTag(t, tag, 'no'); R.reserved[idx] = false; S.today.tooDear++;
+    addRep(-0.02);
+    say(c, `${tag}g? Too dear!`, 2.8, 'bad'); c.react = {kind:'bad', t:0}; sfx('bad');
+    setLast('bad', 'Too dear', `${c.name} put back your ${tag}g ${ITEMS[t].name}`);
+    walk(c, [V(-2.2,0,0.7)], () => { c.waitT = 0.8; c.after = () => leave(c); });
+  }
+}
+function takeFromShelf(c, idx){ R.taken[idx] = true; if(R.slotMesh[idx]) R.slotMesh[idx].visible = false; updateTag(idx); attachCarry(c, c.itemType); sfx('pop'); }
+function noteTag(t, p, r){ const a = S.notes[t] || (S.notes[t] = []); a.push({p, r}); if(a.length > 5) a.shift(); }
 function requestCounter(c){
   if(!R.counter || R.counter === c){
     R.counter = c; if(R.wait === c) R.wait = null;
@@ -964,7 +1128,7 @@ function leave(c){
 }
 function clearCustomers(){
   for(const c of R.customers){ scene.remove(c.g); c.bubble.remove(); }
-  R.customers = []; R.counter = null; R.wait = null; R.reserved.fill(false);
+  R.customers = []; R.counter = null; R.wait = null; R.reserved.fill(false); R.taken.fill(false); R.haggle = null;
   if(R.counterItem){ scene.remove(R.counterItem); R.counterItem = null; }
 }
 
@@ -995,16 +1159,17 @@ function updateChar(c, dt){
 /* ---------------- haggling ---------------- */
 function startHaggle(c){
   if(!S || S.phase !== 'day') return;
-  const t = c.itemType, v = fair(t), a = c.a;
-  const pat = a.patience + (S.upgrades.lanterns?1:0) + (S.rep>=3?1:0);
-  const H = {c, t, v, seller:c.seller, patience:pat, max:pat, last:null, cost: c.seller ? 0 : (S.slots[c.slot] ? S.slots[c.slot].cost : 0)};
+  if(c.deal === 'tag') return quickSale(c);
+  const t = c.itemType, v = fair(t), a = c.a, m = MOODS[c.mood];
+  const pat = Math.max(2, a.patience + m.pat + (S.upgrades.lanterns?1:0) + (S.rep>=3?1:0));
+  const H = {c, t, v, m, seller:c.seller, patience:pat, max:pat, last:null, lastAsk:null, refused:null, stalled:false, clock:0, clockMax:m.clock, tell:tellFor(c, t), cost: c.seller ? 0 : (S.slots[c.slot] ? S.slots[c.slot].cost : 0)};
   if(!c.seller){
-    H.wtp = Math.max(2, Math.round(v * a.wealth * rnd(0.88,1.22) * (1+0.03*S.rep) * (S.upgrades.cat?1.05:1)));
-    H.lo = Math.max(1, Math.round(v*0.4)); H.hi = Math.round(v*2.6)+5; H.price = Math.round(v*1.3);
-    H.quote = fill(pick(LINES.open[c.ak] || LINES.open.ranger), t);
+    H.wtp = c.wtp || wtpFor(c, t); H.tag = S.tags[t];
+    H.lo = Math.max(1, Math.round(v*0.4)); H.hi = Math.max(Math.round(v*2.6)+5, H.tag+10); H.price = H.tag;
+    H.quote = `Your tag says ${H.tag}g. ` + pick(LINES.tagOpen);
     H.read = [Math.round(H.wtp*rnd(0.84,0.94)), Math.round(H.wtp*rnd(1.05,1.15))];
   } else {
-    H.ask = Math.max(2, Math.round(v * rnd(0.42,0.68) * (c.ak==='goblin'?0.85:1)));
+    H.ask = Math.max(2, Math.round(v * rnd(0.42,0.68) * (c.ak==='goblin'?0.85:1) * m.sellAsk));
     H.lo = 1; H.hi = Math.round(v*1.6)+5; H.price = Math.max(1, Math.round(v*0.45));
     H.quote = fill(pick(c.ak==='goblin' ? LINES.sellGoblin : LINES.sellOpen), t);
     H.read = [Math.round(H.ask*rnd(0.86,0.95)), Math.round(H.ask*rnd(1.05,1.15))];
@@ -1012,8 +1177,8 @@ function startHaggle(c){
   H.price = clamp(H.price, H.lo, H.hi);
   removeCarry(c);
   R.counterItem = buildItem(t); R.counterItem.position.copy(COUNTER_TOP); R.counterItem.rotation.y = 0.5; scene.add(R.counterItem); popMesh(R.counterItem);
-  R.haggle = H; R.firstHaggles++;
-  $('#hgCoach').hidden = !(S.day === 1 && R.firstHaggles <= 2 && !c.seller);
+  R.haggle = H; if(!c.seller) R.firstHaggles++;
+  $('#hgCoach').hidden = !(S.day <= 2 && R.firstHaggles <= 2 && !c.seller);
   const sl = $('#hgSlider'); sl.min = H.lo; sl.max = H.hi;
   updateHaggle(); showSheet('#haggle'); setMode('counter');
   say(c, 'Hmm…', 1.4); sfx('hmm');
@@ -1024,65 +1189,95 @@ function updateHaggle(){
   setText($('#hgArch'), c.a.label); setText($('#hgName'), c.name);
   $('#hgPat').innerHTML = Array.from({length:H.max}, (_,i) => `<span class="pip${i<H.patience?' on':''}"></span>`).join('');
   setText($('#hgQuote'), '“' + H.quote + '”');
+  setText($('#hgTellText'), H.tell);
   const st = $('#hgStatus');
-  if(H.refused != null){ st.hidden = false; st.innerHTML = `${GLYPH.bad}<span>${H.seller ? 'Turned down' : 'Refused'} your ${H.refused}g. Their counter: <b>${H.last}g</b></span>`; }
+  if(H.stalled){ st.hidden = false; st.innerHTML = `${GLYPH.bad}<span>You kept them waiting. Their offer is now <b>${H.last}g</b></span>`; }
+  else if(H.refused != null){ st.hidden = false; st.innerHTML = `${GLYPH.bad}<span>${H.seller ? 'Turned down' : 'Refused'} your ${H.refused}g. Their counter: <b>${H.last}g</b></span>`; }
   else st.hidden = true;
+  $('#hgClock').hidden = !(H.last != null && !H.resolved);
   $('#hgIcon').innerHTML = iconHTML(H.t);
   setText($('#hgItem'), it.name);
   const free = freeCount();
-  setText($('#hgVal'), H.seller ? `Fair price ${H.v}g · ${free} shelf ${free===1?'space':'spaces'} free` : `Fair price ${H.v}g · you paid ${H.cost}g`);
+  setText($('#hgVal'), H.seller ? `Fair price ${H.v}g · ${free} shelf ${free===1?'space':'spaces'} free` : `Fair ${H.v}g · you paid ${H.cost}g · tag ${H.tag}g`);
   const d = S.market[H.t].d, tag = $('#hgTag');
   if(d >= 1.1){ tag.hidden = false; tag.className = 'tag up'; tag.textContent = '▲ In demand'; }
   else if(d <= 0.9){ tag.hidden = false; tag.className = 'tag down'; tag.textContent = '▼ Glut'; }
   else tag.hidden = true;
   const rd = $('#hgRead');
-  if(S.upgrades.loupe){ rd.hidden = false; rd.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="10" cy="10" r="6"/><path d="M15 15l6 6"/></svg><span>${H.seller ? 'They would likely let it go for' : 'They look ready to pay about'} ${H.read[0]}–${H.read[1]}g</span>`; }
+  if(S.upgrades.loupe){ rd.hidden = false; rd.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="10" cy="10" r="6"/><path d="M15 15l6 6"/></svg><span>${H.m.label}. ${H.seller ? 'Would likely let it go for' : 'Ready to pay about'} ${H.read[0]}–${H.read[1]}g</span>`; }
   else rd.hidden = true;
   const p = H.price;
   setText($('#hgPrice'), String(p)); $('#hgSlider').value = p;
   const mg = $('#hgMargin');
   if(H.seller){ mg.className = ''; setText(mg, `resells near ${H.v}g`); }
+  else if(H.lastAsk != null && p > H.lastAsk){ mg.className = 'neg'; setText(mg, `above your last ask of ${H.lastAsk}g`); }
+  else if(p > H.tag){ mg.className = 'neg'; setText(mg, `above your own ${H.tag}g tag`); }
   else { const pr = p - H.cost; mg.className = pr < 0 ? 'neg' : 'pos'; setText(mg, `${pr<0?'loss':'profit'} ${Math.abs(pr)}g`); }
-  const offer = $('#hgOffer'), take = $('#hgTake'), refuse = $('#hgRefuse');
+  const offerB = $('#hgOffer'), take = $('#hgTake'), refuse = $('#hgRefuse');
   if(H.seller){
-    if(free === 0){ offer.disabled = true; setText(offer, 'Shelves full'); }
-    else if(p > S.gold){ offer.disabled = true; setText(offer, 'Not enough gold'); }
-    else { offer.disabled = false; setText(offer, `Offer ${p}g`); }
+    if(free === 0){ offerB.disabled = true; setText(offerB, 'Shelves full'); }
+    else if(p > S.gold){ offerB.disabled = true; setText(offerB, 'Not enough gold'); }
+    else { offerB.disabled = false; setText(offerB, `Offer ${p}g`); }
     setText(refuse, 'No thanks');
     if(H.last != null){ take.hidden = false; setText(take, `Pay ${H.last}g`); take.disabled = H.last > S.gold || free === 0; } else take.hidden = true;
   } else {
-    offer.disabled = false; setText(offer, `Ask ${p}g`); setText(refuse, 'Send away');
+    offerB.disabled = false; setText(offerB, `Ask ${p}g`); setText(refuse, 'Send away');
     if(H.last != null){ take.hidden = false; setText(take, `Take ${H.last}g`); take.disabled = false; } else take.hidden = true;
   }
 }
 function nudge(d){ const H = R.haggle; if(!H || H.resolved) return; H.price = clamp(H.price + d, H.lo, H.hi); sfx('click'); updateHaggle(); }
 function offer(){
   const H = R.haggle; if(!H || H.resolved) return; const p = H.price;
-  H.refused = p;
+  let cost, line = null, next;
   if(!H.seller){
     if(p <= H.wtp) return closeSale(p);
-    const insult = p/H.wtp > 1.5; H.patience -= insult ? 2 : 1;
-    if(H.patience <= 0) return walkout(true);
-    let next = H.last == null ? Math.round(H.wtp*rnd(0.66,0.8)) : Math.round(H.last + (H.wtp-H.last)*rnd(0.35,0.55));
+    cost = p/H.wtp > H.m.insult ? 2 : 1;
+    if(H.lastAsk != null && p > H.lastAsk){ cost = 2; line = pick(LINES.raised).replace('{c}', H.lastAsk); }
+    else if(p > H.tag){ cost = 2; line = pick(LINES.overTag).replace('{c}', H.tag); }
+    H.patience -= cost; H.lastAsk = p; H.refused = p; H.stalled = false;
+    if(H.patience <= 0) return walkout(true, line ? 'raised' : 'high');
+    next = H.last == null
+      ? Math.round(H.wtp * clamp(rnd(H.m.first[0], H.m.first[1]) + 0.25*(H.tag/H.wtp - 1), 0.45, 0.95))
+      : Math.round(H.last + (H.wtp - H.last) * rnd(H.m.concede[0], H.m.concede[1]));
     next = Math.min(next, H.wtp, p-1); if(H.last != null) next = Math.max(next, H.last);
-    H.last = next; H.quote = fill(pick(insult ? LINES.insult : LINES.counter), H.t, next) + (H.patience === 1 ? ' ' + pick(LINES.warn) : '');
-    say(H.c, insult ? 'Hah!' : 'Hmm.', 1.2); sfx('hmm');
+    H.last = next;
+    H.quote = (line ? line + ' ' : '') + fill(pick(cost === 2 && !line ? LINES.insult : LINES.counter), H.t, next);
   } else {
     if(p > S.gold || freeCount() === 0) return;
     if(p >= H.ask) return closeBuy(p);
-    const insult = p/H.ask < 0.6; H.patience -= insult ? 2 : 1;
-    if(H.patience <= 0) return walkout(true);
-    let next = H.last == null ? Math.round(H.ask*rnd(1.3,1.5)) : Math.round(H.last - (H.last-H.ask)*rnd(0.35,0.55));
+    cost = p/H.ask < 0.6 ? 2 : 1;
+    if(H.lastAsk != null && p < H.lastAsk){ cost = 2; line = pick(LINES.lowered).replace('{c}', H.lastAsk); }
+    H.patience -= cost; H.lastAsk = p; H.refused = p; H.stalled = false;
+    if(H.patience <= 0) return walkout(true, line ? 'raised' : 'low');
+    next = H.last == null ? Math.round(H.ask*rnd(1.3,1.5)) : Math.round(H.last - (H.last - H.ask) * rnd(H.m.concede[0], H.m.concede[1]));
     next = Math.max(next, H.ask, p+1); if(H.last != null) next = Math.min(next, H.last);
-    H.last = next; H.quote = fill(pick(insult ? LINES.sellInsult : LINES.sellCounter), H.t, next) + (H.patience === 1 ? ' ' + pick(LINES.warn) : '');
-    say(H.c, insult ? 'Pah!' : 'Hmm.', 1.2); sfx('hmm');
+    H.last = next;
+    H.quote = (line ? line + ' ' : '') + fill(pick(cost === 2 && !line ? LINES.sellInsult : LINES.sellCounter), H.t, next);
   }
-  updateHaggle();
+  if(H.patience === 1) H.quote += ' ' + pick(LINES.warn);
+  say(H.c, cost === 2 ? 'Hah!' : 'Hmm.', 1.2); sfx('hmm');
+  H.clock = H.clockMax; updateHaggle();
+}
+/* Counter-offers don't wait forever: stall and the offer gets worse and patience drops. */
+function tickHaggle(dt){
+  const H = R.haggle; if(!H || H.resolved || H.last == null) return;
+  H.clock -= dt;
+  const bar = $('#hgClock i'); if(bar) bar.style.width = (clamp(H.clock/H.clockMax, 0, 1)*100).toFixed(1) + '%';
+  if(H.clock > 0) return;
+  H.patience--;
+  if(H.patience <= 0) return walkout(true, 'wait');
+  if(H.seller) H.last = Math.round(H.last*1.07) + 1;
+  else H.last = Math.max(1, Math.round(H.last*0.93) - 1);
+  H.stalled = true; H.refused = null;
+  H.quote = fill(pick(H.seller ? LINES.stallSell : LINES.stallBuy), H.t, H.last) + (H.patience === 1 ? ' ' + pick(LINES.warn) : '');
+  H.clock = H.clockMax; say(H.c, 'Well?', 1.2); sfx('hmm'); updateHaggle();
 }
 function takeCounter(){ const H = R.haggle; if(!H || H.resolved || H.last == null) return; if(H.seller) closeBuy(H.last); else closeSale(H.last); }
+
 /* Show the outcome stamp over the haggle sheet, hold it, then let the customer go. Tap to skip. */
 function resolve(kind, title, sub, note, last, after){
   const H = R.haggle; H.resolved = true;
+  $('#hgClock').hidden = true;
   const v = $('#hgVerdict');
   v.className = 'verdict ' + kind;
   v.innerHTML = `<div class="stamp">${GLYPH[kind]}<b></b></div><div class="v-sub"></div><div class="v-note"></div><div class="v-skip">Tap to continue</div>`;
@@ -1107,75 +1302,104 @@ function coinBurst(){
   const geo = new THREE.CylinderGeometry(0.05,0.05,0.012,10), m = mat(0xe3b55e,{metalness:0.8,roughness:0.3});
   for(let i=0;i<10;i++){ const c = mesh(geo, m, COUNTER_TOP.x, COUNTER_TOP.y+0.1, COUNTER_TOP.z); c.userData = {v:V(rnd(-0.8,0.8), rnd(2,3.4), rnd(-0.8,0.8)), life:1.1, spin:rnd(5,12)}; scene.add(c); R.coins.push(c); }
 }
-function closeSale(p){
-  const H = R.haggle, c = H.c, T = S.today;
-  S.gold += p; T.revenue += p; T.cogs += H.cost; T.sales++;
+function recordSale(c, t, p, cost){
+  const T = S.today;
+  S.gold += p; T.revenue += p; T.cogs += cost; T.sales++;
   S.totals.sales++; S.totals.revenue += p; S.totals.best = Math.max(S.totals.best, p);
-  S.slots[c.slot] = null; R.reserved[c.slot] = false; refreshShelves();
-  const happy = p <= H.v;
-  if(happy){ addRep(0.09); T.delighted++; say(c, pick(['A bargain!','Splendid!',"I'll be back!"]), 3, 'good'); }
-  else { addRep(0.04); say(c, pick(['Deal.','Fair enough.','Done.']), 3, 'good'); }
-  attachCarry(c, H.t);
-  if(R.counterItem){ scene.remove(R.counterItem); R.counterItem = null; }
+  S.slots[c.slot] = null; R.reserved[c.slot] = false; R.taken[c.slot] = false; refreshShelves();
+  const happy = p <= fair(t), r0 = S.rep;
+  addRep(happy ? 0.09 : 0.04); if(happy) T.delighted++;
   floatText(COUNTER_TOP.clone().add(V(0,0.5,0)), `+${p}g`); coinBurst(); sfx('coin');
   keeper.jump = 0.5; say(keeper, 'Thank you!', 1.6);
+  return {happy, dr: S.rep - r0};
+}
+function closeSale(p){
+  const H = R.haggle, c = H.c, name = ITEMS[H.t].name;
+  const {happy, dr} = recordSale(c, H.t, p, H.cost);
+  say(c, happy ? pick(['A bargain!','Splendid!',"I'll be back!"]) : pick(['Deal.','Fair enough.','Done.']), 3, 'good');
+  attachCarry(c, H.t);
+  if(R.counterItem){ scene.remove(R.counterItem); R.counterItem = null; }
   const profit = p - H.cost;
-  resolve('good', 'Sold', `${ITEMS[H.t].name} · +${p}g`,
-    `${profit >= 0 ? 'Profit' : 'Loss'} ${Math.abs(profit)}g${happy ? '. They loved the price.' : '.'}`,
-    `${ITEMS[H.t].name} to ${c.name}, ${p}g`,
-    () => { leave(c); checkCharter(); });
+  resolve('good', 'Sold', `${name} · +${p}g`, `${profit >= 0 ? 'Profit' : 'Loss'} ${Math.abs(profit)}g. ${repStr(dr)}`,
+    `${name} to ${c.name}, ${p}g`, () => { leave(c); checkCharter(); });
+  updateHUD();
+}
+/* A customer who accepted your tag pays at the counter without haggling. */
+function quickSale(c){
+  const t = c.itemType, p = S.tags[t], cost = S.slots[c.slot] ? S.slots[c.slot].cost : 0;
+  const {dr} = recordSale(c, t, p, cost);
+  c.react = {kind:'good', t:0}; say(c, `Paid ${p}g`, 2.6, 'good');
+  setLast('good', 'Sold', `${ITEMS[t].name} to ${c.name} at your tag, ${p}g`);
+  toast(`<b>Sold</b> ${ITEMS[t].name} at your tag · +${p}g · ${repStr(dr)}`);
+  c.waitT = 1.1; c.after = () => { releaseCounter(); leave(c); checkCharter(); };
   updateHUD();
 }
 function closeBuy(p){
   const H = R.haggle, c = H.c, T = S.today; const i = freeSlot(); if(i < 0 || p > S.gold) return;
   S.gold -= p; T.spentBuying += p; T.bought++;
   placeItem(i, H.t, p);
+  const r0 = S.rep;
   if(p >= H.v*0.75){ addRep(0.08); T.delighted++; say(c, pick(['Generous!','Pleasure doing business.']), 3, 'good'); }
   else { addRep(0.03); say(c, pick(['Fine, fine.','Done.','Coin is coin.']), 3, 'good'); }
   if(R.counterItem){ scene.remove(R.counterItem); R.counterItem = null; }
   floatText(COUNTER_TOP.clone().add(V(0,0.5,0)), `−${p}g`, 'loss'); sfx('coin');
   resolve('good', 'Bought', `${ITEMS[H.t].name} · −${p}g`,
-    `Now on your shelf. Fair price is about ${H.v}g.`,
-    `${ITEMS[H.t].name} from ${c.name}, ${p}g`,
-    () => leave(c));
+    `On your shelf at a ${S.tags[H.t]}g tag. ${repStr(S.rep - r0)}`,
+    `${ITEMS[H.t].name} from ${c.name}, ${p}g`, () => leave(c));
   updateHUD();
 }
-function walkout(angry){
+const WALK_REASON = {
+  high:'Your price was too high.', low:'Your offers were too low.',
+  raised:'You went back on your own price.', wait:'You kept them waiting too long.',
+};
+function walkout(angry, why){
   const H = R.haggle; if(!H || H.resolved) return; const c = H.c, T = S.today;
-  if(!H.seller){ R.reserved[c.slot] = false; refreshShelves(); popMesh(R.slotMesh[c.slot]); }
+  if(!H.seller){ R.reserved[c.slot] = false; R.taken[c.slot] = false; refreshShelves(); popMesh(R.slotMesh[c.slot]); }
   else attachCarry(c, H.t);
   if(R.counterItem){ scene.remove(R.counterItem); R.counterItem = null; }
-  const name = ITEMS[H.t].name;
+  const name = ITEMS[H.t].name, r0 = S.rep;
   if(angry){
     T.angry++; addRep(-0.15); say(c, pick(['Thief!','Robbery!',"I'll go to Larkspur!"]), 3, 'bad'); sfx('bad');
     resolve('bad', 'Walked out', H.seller ? `${c.name} kept the ${name}` : `No sale · ${name} back on the shelf`,
-      H.seller ? 'Your offers were too low. Reputation fell.' : 'Your price was too high. Reputation fell.',
+      `${WALK_REASON[why] || WALK_REASON.high} ${repStr(S.rep - r0)}`,
       `${c.name} stormed out over the ${name}`, () => leave(c));
   } else {
     addRep(-0.03); say(c, pick(['Fine, then.','Suit yourself.']), 3, 'meh'); sfx('hmm');
     resolve('meh', H.seller ? 'Declined' : 'Sent away', H.seller ? `You passed on the ${name}` : `No sale · ${name} back on the shelf`,
-      '', H.seller ? `passed on ${c.name}'s ${name}` : `${c.name} left without the ${name}`, () => leave(c));
+      repStr(S.rep - r0), H.seller ? `passed on ${c.name}'s ${name}` : `${c.name} left without the ${name}`, () => leave(c));
   }
   updateHUD();
 }
 
 /* ---------------- day / night ---------------- */
-function freshToday(){ return {revenue:0, cogs:0, sales:0, bought:0, spentBuying:0, delighted:0, angry:0, missed:{}, repStart:S.rep, goldStart:S.gold, visitors:0}; }
+const upkeepFor = d => 6 + 2*(d-1);
+const titheFor = d => d % 7 === 0 ? Math.round(150 * Math.pow(d/7, 1.4) * (S.rep >= 4 ? 0.85 : 1)) : 0;
+const daysToTithe = d => (7 - d % 7) % 7;
+function freshToday(){ return {revenue:0, cogs:0, sales:0, bought:0, spentBuying:0, delighted:0, angry:0, tooDear:0, missed:{}, repStart:S.rep, goldStart:S.gold, visitors:0}; }
 function beginDay(){
   S.phase = 'day'; S.today = freshToday();
-  R.total = Math.min(13, 4 + Math.floor(S.rep) + Math.floor((S.day-1)/2) + (S.upgrades.sign?2:0));
+  const e = ev();
+  R.total = clamp(4 + Math.floor(S.rep) + Math.floor((S.day-1)/2) + (S.upgrades.sign?2:0) + (e.visitors||0), 2, 15);
   S.today.visitors = R.total;
-  R.spawned = 0; R.done = 0; R.ending = false; R.nextSpawn = R.time + 1.4; R.firstHaggles = S.day===1 ? R.firstHaggles : 99;
+  R.spawned = 0; R.done = 0; R.ending = false; R.nextSpawn = R.time + 1.4;
   showSheet('#dock'); setMode('room');
   $('#dockLast').hidden = true;
-  const rm = $('#dockRumor');
-  if(S.rumors && S.rumors.length){ rm.hidden = false; rm.innerHTML = '<b>Tavern talk:</b> ' + S.rumors.map(r => r.text).join(' '); }
-  else rm.hidden = true;
+  const rm = $('#dockRumor'), parts = [];
+  if(e.today) parts.push(`<b>Today:</b> ${e.today}`);
+  if(S.rumors && S.rumors.length) parts.push('<b>Tavern talk:</b> ' + S.rumors.map(r => r.text).join(' '));
+  rm.hidden = !parts.length; rm.innerHTML = parts.join('<br>');
+  const n = daysToTithe(S.day), tt = $('#dockTithe');
+  tt.className = 'tithe' + (n === 0 ? ' due' : '');
+  tt.innerHTML = n === 0
+    ? `<b>Guild tithe of ${titheFor(S.day)}g is due tonight</b>, plus ${upkeepFor(S.day)}g upkeep.`
+    : `Upkeep tonight ${upkeepFor(S.day)}g. Guild tithe <b>${titheFor(S.day+n)}g</b> in ${n} ${n===1?'day':'days'}.`;
   updateHUD(); updateDock();
+  if(n === 0) toast(`The Guild collects its tithe tonight: <b>${titheFor(S.day)}g</b>.`);
 }
 function openShop(){
   if(!S.next) genNext();
-  S.day++; S.market = S.next; S.rumors = S.nextRumors; S.next = null; S.nextRumors = [];
+  S.day++; S.market = S.next; S.rumors = S.nextRumors; S.event = S.nextEvent || null;
+  S.next = null; S.nextRumors = []; S.nextEvent = null;
   sfx('bell'); beginDay();
 }
 function genNext(){
@@ -1187,14 +1411,24 @@ function genNext(){
   for(const r of chosen) for(const k in r.eff){ n[k].d *= r.eff[k][0]; n[k].w *= r.eff[k][1]; }
   for(const t of TYPES){ n[t].w = clamp(n[t].w, 0.4, 2); n[t].d = clamp(n[t].d, 0.5, 2.2); }
   S.next = n; S.nextRumors = chosen.map(r => ({text:r.text, types:Object.keys(r.eff)}));
+  S.nextEvent = (S.day >= 2 && Math.random() < 0.35) ? pick(Object.keys(EVENTS)) : null;
 }
-const duesFor = d => 12 + 5*(d-1);
 function enterNight(){
   if(S.phase !== 'day') return;
   clearCustomers(); refreshShelves();
   S.phase = 'night';
-  const dues = duesFor(S.day); S.gold -= dues;
-  S.lastLedger = Object.assign({}, S.today, {dues, day:S.day, goldEnd:S.gold, repEnd:S.rep});
+  const upkeep = upkeepFor(S.day), tithe = titheFor(S.day);
+  S.gold -= upkeep + tithe;
+  let theft = null;
+  if(S.day >= 3 && Math.random() < 0.15){
+    const full = []; for(let i=0;i<16;i++) if(unlocked(i) && S.slots[i]) full.push(i);
+    if(full.length){
+      const i = pick(full), t = S.slots[i].type;
+      if(S.upgrades.cat && Math.random() < 0.6) theft = {t, caught:true};
+      else { S.slots[i] = null; theft = {t, caught:false}; refreshShelves(); }
+    }
+  }
+  S.lastLedger = Object.assign({}, S.today, {upkeep, tithe, theft, day:S.day, goldEnd:S.gold, repEnd:S.rep});
   S.debtNights = S.gold < 0 ? S.debtNights + 1 : 0;
   genNext(); updateHUD();
   if(S.debtNights >= 3){ gameOver(); return; }
@@ -1215,15 +1449,27 @@ function renderNightBody(){
   const body = $('#nightBody'), keep = body.scrollTop;
   if(nightTab === 'ledger') body.innerHTML = ledgerHTML();
   else if(nightTab === 'market') body.innerHTML = marketHTML();
+  else if(nightTab === 'shelves') body.innerHTML = shelvesHTML();
   else body.innerHTML = workshopHTML();
   body.scrollTop = keep;
 }
 const sg = n => (n>0?'+':n<0?'−':'') + Math.abs(Math.round(n)) + 'g';
+function repNext(){
+  const t = REP_TIERS.find(x => x.at > S.rep + 1e-9);
+  return t ? `Next: ★${t.at} in ${(t.at - S.rep).toFixed(2)}. ${t.text}` : 'Top reputation. Every perk is yours.';
+}
+function obligations(){
+  const d = S.day + 1, n = daysToTithe(d);
+  return `Tomorrow's upkeep: <b>${upkeepFor(d)}g</b>. Guild tithe: <b>${titheFor(d+n)}g</b> ${n === 0 ? 'due tomorrow night' : `on night ${d+n}, in ${n+1} days`}.`;
+}
 function ledgerHTML(){
   const L = S.lastLedger;
-  if(!L || L.day !== S.day) return `<p class="note">Welcome back to Hollowmere. Last night's ledger page is smudged past reading, but the market is open and the shelves are as you left them.</p>${debtNote()}`;
+  if(!L || L.day !== S.day) return `<p class="note">Welcome back to Hollowmere. Last night's ledger page is smudged past reading, but the market is open and the shelves are as you left them.</p><p class="note">${obligations()}</p>${debtNote()}`;
   const gross = L.revenue - L.cogs, change = L.goldEnd - L.goldStart, dr = L.repEnd - L.repStart;
   const missed = Object.entries(L.missed).map(([t,n]) => `${ITEMS[t].name} ×${n}`).join(', ');
+  const theft = L.theft ? (L.theft.caught
+    ? `<p class="note"><b>A thief crept in after closing.</b> The cat yowled and they fled empty-handed.</p>`
+    : `<p class="warn">A thief crept in after closing and took a ${ITEMS[L.theft.t].name} off your shelf.${S.upgrades.cat ? '' : ' A shop cat might have scared them off.'}</p>`) : '';
   return `<dl class="ledger">
     <dt>Visitors</dt><dd>${L.visitors}</dd>
     <dt>Items sold</dt><dd>${L.sales}</dd>
@@ -1231,29 +1477,56 @@ function ledgerHTML(){
     <dt>What those items cost you</dt><dd>${sg(-L.cogs)}</dd>
     <dt>Profit on sales</dt><dd class="${gross>=0?'pos':'neg'}">${sg(gross)}</dd>
     <dt>Bought from sellers (${L.bought})</dt><dd>${sg(-L.spentBuying)}</dd>
-    <dt>Guild dues</dt><dd class="neg">${sg(-L.dues)}</dd>
+    <dt>Upkeep: rent and candles</dt><dd class="neg">${sg(-(L.upkeep||0))}</dd>
+    ${L.tithe ? `<dt>Guild tithe</dt><dd class="neg">${sg(-L.tithe)}</dd>` : ''}
     <div class="total" style="display:contents"><dt>Purse, end of day</dt><dd>${Math.round(L.goldEnd)}g <small class="${change>=0?'pos':'neg'}">(${sg(change)})</small></dd></div>
-    <dt>Reputation</dt><dd class="${dr>=0?'pos':'neg'}">${L.repEnd.toFixed(1)} ★ (${dr>=0?'+':'−'}${Math.abs(dr).toFixed(2)})</dd>
+    <dt>Reputation</dt><dd class="${dr>=0?'pos':'neg'}">${L.repEnd.toFixed(2)} ★ (${dr>=0?'+':'−'}${Math.abs(dr).toFixed(2)})</dd>
     <dt>Happy customers · walkouts</dt><dd>${L.delighted} · ${L.angry}</dd>
+    <dt>Put back as too dear</dt><dd class="${L.tooDear ? 'neg' : ''}">${L.tooDear||0}</dd>
   </dl>
+  ${theft}
   ${missed ? `<p class="note"><b>Asked for, not on the shelf:</b> ${missed}. Lost sales cost a little reputation too.</p>` : `<p class="note">Nobody left empty-handed for lack of stock today.</p>`}
-  <p class="note">Tomorrow's guild dues: <b>${duesFor(S.day+1)}g</b>.</p>
+  ${L.tooDear ? `<p class="note"><b>Some tags were too steep.</b> Check the Shelves tab to see which.</p>` : ''}
+  <p class="note">${repNext()}</p>
+  <p class="note">${obligations()}</p>
   ${debtNote()}`;
 }
 function debtNote(){ return S.gold < 0 ? `<p class="warn">You owe the Guild ${Math.abs(Math.round(S.gold))}g. Clear it within ${3 - S.debtNights} ${3-S.debtNights===1?'night':'nights'} or they take the shop.</p>` : ''; }
 function marketHTML(){
   const lm = (S.lastLedger && S.lastLedger.day === S.day) ? S.lastLedger.missed : {};
-  const notices = S.nextRumors.length ? S.nextRumors.map(r => `<p class="notice">“${r.text}”<small>Touches ${r.types.map(t => ITEMS[t].name).join(', ')}</small></p>`).join('') : '<p class="notice">“Quiet night. Nothing worth repeating.”</p>';
+  const evN = S.nextEvent ? `<p class="notice">“${EVENTS[S.nextEvent].text}”<small>Tomorrow: ${EVENTS[S.nextEvent].effect}</small></p>` : '';
+  const notices = (S.nextRumors.length ? S.nextRumors.map(r => `<p class="notice">“${r.text}”<small>Touches ${r.types.map(t => ITEMS[t].name).join(', ')}</small></p>`).join('') : '<p class="notice">“Quiet night. Nothing worth repeating.”</p>') + evN;
   const rows = TYPES.map(t => {
     const cost = wholesale(t), d = S.next[t].d, pct = Math.round((d-1)*100);
     const tag = pct >= 8 ? `<span class="tag up">Buyers +${pct}%</span>` : pct <= -8 ? `<span class="tag down">Buyers ${pct}%</span>` : `<span class="tag flat">Steady</span>`;
     const can = S.gold >= cost && freeCount() > 0;
     const miss = lm[t] ? ` · asked for ${lm[t]}×` : '';
-    return `<div class="mrow"><span class="icon">${iconHTML(t)}</span><div class="m-name"><b>${ITEMS[t].name}</b><span>On shelf ${stockOf(t)}${miss}</span></div><div class="m-num"><b>${cost}g</b>${tag}</div><button class="btn secondary buy" data-buy="${t}" ${can?'':'disabled'} aria-label="Buy one ${ITEMS[t].name} for ${cost} gold">Buy</button></div>`;
+    return `<div class="mrow"><span class="icon">${iconHTML(t)}</span><div class="m-name"><b>${ITEMS[t].name}</b><span>On shelf ${stockOf(t)} · tag ${S.tags[t]}g${miss}</span></div><div class="m-num"><b>${cost}g</b>${tag}</div><button class="btn secondary buy" data-buy="${t}" ${can?'':'disabled'} aria-label="Buy one ${ITEMS[t].name} for ${cost} gold">Buy</button></div>`;
   }).join('');
   return `<div class="notices"><h3>Talk at the Gilded Gourd</h3>${notices}</div>
     <div class="space"><span>Free shelf space <b>${freeCount()} of ${capacity()}</b></span><span>Wholesale, tonight</span></div>${rows}
     <p class="note">Wholesale prices already react to the gossip. Tomorrow's customers will too, usually by more.</p>`;
+}
+function shelvesHTML(){
+  const NL = {buy:'paid', haggle:'haggled', no:'refused'};
+  const rows = TYPES.slice().sort((a,b) => (stockOf(b)>0) - (stockOf(a)>0)).map(t => {
+    const n = stockOf(t), fairT = Math.max(1, Math.round(ITEMS[t].base * S.next[t].d)), tag = S.tags[t];
+    const notes = (S.notes[t]||[]).slice().reverse().map(x => `<span class="nchip ${x.r}" title="${NL[x.r]}">${x.p}g ${NL[x.r]}</span>`).join('');
+    const rel = tag / fairT, hint = rel <= 1 ? 'most will just pay' : rel <= 1.25 ? 'many will haggle' : rel <= 1.5 ? 'many will refuse' : 'almost all will refuse';
+    return `<div class="trow${n ? '' : ' empty'}"><span class="icon">${iconHTML(t)}</span>
+      <div class="m-name"><b>${ITEMS[t].name}</b><span>On shelf ${n} · fair tomorrow ~${fairT}g</span>${notes ? `<div class="notes">${notes}</div>` : ''}</div>
+      <div class="tagctl">
+        <button class="step" data-tag="${t}" data-d="-5" aria-label="Lower ${ITEMS[t].name} tag by 5">−5</button>
+        <button class="step" data-tag="${t}" data-d="-1" aria-label="Lower ${ITEMS[t].name} tag by 1">−1</button>
+        <output>${tag}g<small>${hint}</small></output>
+        <button class="step" data-tag="${t}" data-d="1" aria-label="Raise ${ITEMS[t].name} tag by 1">+1</button>
+        <button class="step" data-tag="${t}" data-d="5" aria-label="Raise ${ITEMS[t].name} tag by 5">+5</button>
+      </div></div>`;
+  }).join('');
+  return `<p class="note" style="margin-top:0">A customer pays a tag that's within their budget, haggles over one a little above it, and puts the item back if it's far above. Your tag is also your opening ask.</p>${rows}`;
+}
+function setTag(t, d){
+  S.tags[t] = clamp(S.tags[t] + d, 1, 999); sfx('click'); refreshShelves(); save(); renderNightBody();
 }
 function workshopHTML(){
   return UPGRADES.map(u => {
@@ -1286,6 +1559,17 @@ function showModal(eyebrow, title, text, btn, fn){
   $('#mBtn').onclick = () => { m.hidden = true; fn(); };
 }
 
+/* ---------------- reputation panel ---------------- */
+function openRep(){
+  if(!S || S.phase === 'intro') return;
+  const tiers = REP_TIERS.map(t => `<li class="${S.rep >= t.at ? 'on' : ''}"><b>★${t.at}</b><span>${t.text}</span></li>`).join('');
+  $('#repBody').innerHTML = `<p class="repnow">You stand at <b>${S.rep.toFixed(2)} ★</b>. Every full star brings one more customer a day, and customers pay 3% more per star.</p>
+    <ul class="tiers">${tiers}</ul>
+    <span class="eyebrow">What moves it</span>
+    <dl class="moves">${REP_MOVES.map(([a,b]) => `<dt>${a}</dt><dd class="${b[0]==='+'?'pos':'neg'}">${b}</dd>`).join('')}</dl>`;
+  $('#repCard').hidden = false;
+}
+
 /* ---------------- HUD ---------------- */
 function updateHUD(){
   if(!S) return;
@@ -1297,7 +1581,7 @@ function updateHUD(){
   setText($('#hudGold'), Math.round(S.gold).toLocaleString('en-US'));
   $('#hudGoldWrap').classList.toggle('neg', S.gold < 0);
   $('#hudRep').style.width = (S.rep/5*100) + '%';
-  $('#hudRepWrap').setAttribute('aria-label', `Reputation ${S.rep.toFixed(1)} of 5`);
+  $('#hudRepWrap').setAttribute('aria-label', `Reputation ${S.rep.toFixed(1)} of 5. Show what it does.`);
   $('#hudProg').style.width = (S.phase === 'day' && R.total ? (R.done/R.total*100) : 100) + '%';
 }
 function updateDock(){
@@ -1317,6 +1601,7 @@ function updateDock(){
 function tick(dt){
   R.time += dt;
   for(let i=R.timers.length-1;i>=0;i--){ const tm = R.timers[i]; tm.t -= dt; if(tm.t <= 0){ R.timers.splice(i,1); tm.fn(); } }
+  if(S && S.phase === 'day') tickHaggle(dt);
   if(S && S.phase === 'day' && !R.ending){
     if(R.spawned < R.total && activeCount() < 2 && R.time >= R.nextSpawn){ spawnCustomer(); R.nextSpawn = R.time + rnd(2.6,5.2); }
     if(R.spawned >= R.total && R.customers.length === 0 && !R.haggle){ R.ending = true; toast('The last customer has gone. Time to close up.'); later(1.8, enterNight); }
@@ -1392,7 +1677,7 @@ function frame(now){
 
 /* ---------------- game flow ---------------- */
 function newGame(){
-  clearSave(); clearCustomers(); S = newState(); R.firstHaggles = 0;
+  clearSave(); clearCustomers(); S = newState(); R.firstHaggles = 0; nightTab = 'ledger';
   applyUpgrades(); $('#intro').hidden = true; beginDay(); sfx('bell');
 }
 function continueGame(s){
@@ -1421,7 +1706,11 @@ function wireUI(){
   $('#nightBody').addEventListener('click', e => {
     const b = e.target.closest('button'); if(!b || b.disabled) return;
     if(b.dataset.buy) buyStock(b.dataset.buy); else if(b.dataset.up) buyUpgrade(b.dataset.up);
+    else if(b.dataset.tag) setTag(b.dataset.tag, +b.dataset.d);
   });
+  $('#hudRepWrap').onclick = openRep;
+  $('#repClose').onclick = () => { $('#repCard').hidden = true; };
+  $('#repCard').addEventListener('click', e => { if(e.target.id === 'repCard') $('#repCard').hidden = true; });
   $('#openBtn').onclick = () => { if(S && S.phase === 'night') openShop(); };
   window.addEventListener('pointerdown', () => audio(), {once:true});
   window.addEventListener('resize', layout);
@@ -1441,7 +1730,7 @@ function start(data){
   S = newState(); applyUpgrades(); S.phase = 'intro';
   layout(); computeFraming();
   updateHUD(); setText($('#hudTod'), 'Before opening');
-  if(data && data.save && data.save.v === 1){ continueGame(data.save); }
+  if(data && data.save && data.save.v === 1){ continueGame(migrate(data.save)); }
   else renderIntro();
   requestAnimationFrame(t => { lastT = t; frame(t); });
 }
