@@ -24,6 +24,10 @@
   --bubble-ink:#2a2116;
   --scrim:rgba(8,13,13,.6);
   --star-empty:rgba(239,229,205,.22);
+  --sign:#1f3a32;
+  --sign-deep:#16291f;
+  --chain:#4a4840;
+  --scrim-strong:rgba(9,14,14,.84);
   --v-tint-good:rgba(149,203,126,.12);
   --v-tint-bad:rgba(226,114,95,.14);
   --f-display:"IM Fell English SC","Iowan Old Style","Palatino Linotype",Georgia,serif;
@@ -228,6 +232,41 @@ input[type=range]{width:100%;accent-color:var(--brass);height:30px;margin:6px 0 
 .moves dt,.moves dd{margin:0;padding:6px 0;border-bottom:1px solid var(--line)}
 .moves dd{text-align:right;font-weight:800;font-variant-numeric:tabular-nums}
 
+/* Title screen: the shop at dusk behind a hanging signboard, menu at the foot */
+.title{position:fixed;inset:0;z-index:25;display:flex;flex-direction:column;justify-content:space-between;align-items:center;gap:20px;overflow-y:auto;padding-top:env(safe-area-inset-top,0px);padding-bottom:calc(env(safe-area-inset-bottom,0px) + 22px);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));transition:opacity .7s ease}
+.title::before,.title::after{content:"";position:fixed;left:0;right:0;z-index:-1;pointer-events:none}
+.title::before{top:0;height:48%;background:linear-gradient(to bottom,var(--scrim-strong),rgba(9,14,14,0))}
+.title::after{bottom:0;height:44%;background:linear-gradient(to top,var(--scrim-strong),rgba(9,14,14,0))}
+.title.leaving{opacity:0;pointer-events:none}
+.title.leaving .sign-wrap{translate:0 -70px;transition:translate .7s ease-in}
+.title-top{display:flex;flex-direction:column;align-items:center;text-align:center;width:100%;max-width:560px}
+.sign-wrap{--drop:clamp(26px,6vh,56px);position:relative;width:min(100%,480px);padding-top:var(--drop);transform-origin:50% 0;animation:swing 7s ease-in-out infinite,signIn .9s cubic-bezier(.2,1.3,.4,1)}
+.sign-wrap::before,.sign-wrap::after{content:"";position:absolute;top:0;width:4px;height:calc(var(--drop) + 12px);border-radius:2px;background:repeating-linear-gradient(to bottom,var(--chain) 0 6px,transparent 6px 9px)}
+.sign-wrap::before{left:20%}
+.sign-wrap::after{right:20%}
+.sign{position:relative;background:linear-gradient(var(--sign),var(--sign-deep));border:2px solid var(--brass-deep);border-radius:14px;padding:20px 18px 16px;box-shadow:0 20px 44px rgba(0,0,0,.55),inset 0 0 0 7px var(--sign),inset 0 0 0 8px rgba(227,181,94,.4)}
+.sign::before,.sign::after{content:"";position:absolute;top:6px;width:10px;height:10px;border-radius:50%;background:var(--brass);box-shadow:inset 0 -2px 0 var(--brass-deep);translate:-3px 0}
+.sign::before{left:20%}
+.sign::after{right:20%;translate:3px 0}
+.sign-name{margin:0;font-family:var(--f-display);font-weight:400;color:var(--brass);line-height:.92;font-size:clamp(44px,13.5vw,76px);text-shadow:0 2px 0 rgba(0,0,0,.45)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.sign-sub{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:8px;font-family:var(--f-display);color:var(--parch);font-size:clamp(17px,4.8vw,22px);letter-spacing:.3em;padding-left:.3em;text-transform:uppercase}
+.sign-sub::before,.sign-sub::after{content:"";height:1px;width:clamp(28px,10vw,64px);background:var(--brass-deep)}
+.sign-wares{margin-top:10px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.title-tag{margin:18px 0 0;max-width:32ch;font-size:16px;line-height:1.4;color:var(--parch);text-shadow:0 1px 10px rgba(0,0,0,.9);text-wrap:balance}
+.title-menu{width:100%;max-width:400px;display:flex;flex-direction:column;gap:6px}
+.title-actions{display:grid;gap:10px}
+.title-actions .btn.primary{min-height:60px;font-size:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;box-shadow:0 10px 28px rgba(0,0,0,.45)}
+.title-actions .btn small{font-size:12.5px;font-weight:700;opacity:.72;font-variant-numeric:tabular-nums}
+.title-actions .btn.ghost{background:rgba(17,25,25,.66);color:var(--parch);border-color:var(--line)}
+.title-actions .btn.danger{background:rgba(17,25,25,.75)}
+.title-foot{display:flex;justify-content:center;align-items:center;gap:8px;color:var(--muted)}
+.link-btn{background:none;border:0;padding:10px 6px;color:var(--parch);font-weight:700;font-size:14px;cursor:pointer;text-decoration:underline;text-decoration-color:var(--brass-deep);text-underline-offset:4px}
+#hud,#toasts{transition:opacity .6s}
+body.titling #hud,body.titling #toasts{opacity:0;visibility:hidden}
+@keyframes swing{0%,100%{rotate:-.8deg}50%{rotate:.8deg}}
+@keyframes signIn{from{translate:0 -40px;opacity:.4}to{translate:0 0;opacity:1}}
+
 /* Overlays */
 .overlay{position:fixed;inset:0;z-index:30;display:grid;place-items:center;overflow-y:auto;background:var(--scrim);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px);padding-top:calc(env(safe-area-inset-top,0px) + 20px);padding-bottom:calc(env(safe-area-inset-bottom,0px) + 20px);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 .card{width:100%;max-width:440px;background:var(--panel);border:1px solid var(--brass-deep);outline:1px solid rgba(227,181,94,.2);outline-offset:-8px;border-radius:22px;padding:26px 22px 22px;box-shadow:0 24px 60px rgba(0,0,0,.5);animation:rise .35s ease-out}
@@ -324,10 +363,32 @@ input[type=range]{width:100%;accent-color:var(--brass);height:30px;margin:6px 0 
   </div>
 </section>
 
-<div id="intro" class="overlay">
+<div id="title" class="title" role="dialog" aria-labelledby="titleName">
+  <div class="title-top">
+    <div class="sign-wrap">
+      <div class="sign">
+        <h1 class="sign-name" id="titleName">Hollowmere<span class="sr"> Curios</span></h1>
+        <div class="sign-sub" aria-hidden="true">Curios</div>
+        <div class="sign-wares">Arms · Elixirs · Oddities</div>
+      </div>
+    </div>
+    <p class="title-tag">Haggle with adventurers, read the tavern gossip, and keep the Merchants' Guild off your back.</p>
+  </div>
+  <div class="title-menu">
+    <p class="err" id="glErr" hidden>Your browser could not start 3D graphics (WebGL), so the shop cannot open here.</p>
+    <div class="title-actions" id="introActions"></div>
+    <div class="title-foot">
+      <button class="link-btn" id="howBtn">How to play</button>
+      <span aria-hidden="true">·</span>
+      <button class="link-btn" id="titleSound">Sound on</button>
+    </div>
+  </div>
+</div>
+
+<div id="intro" class="overlay" hidden>
   <div class="card">
-    <span class="eyebrow">A curio shop at the crossroads</span>
-    <h1>Hollowmere Curios</h1>
+    <span class="eyebrow">How to play</span>
+    <h1>Aunt Wren's shop</h1>
     <p>Aunt Wren left you her shop, eight shelves of odds and ends, and a standing debt to the Merchants' Guild. Adventurers pass through every day on their way to somewhere worse.</p>
     <ol>
       <li>Put a price tag on everything you stock. Customers pay a fair tag, haggle over a steep one, and put back a greedy one.</li>
@@ -335,8 +396,7 @@ input[type=range]{width:100%;accent-color:var(--brass);height:30px;margin:6px 0 
       <li>Each night, restock and set tags. Upkeep is due daily and the Guild's tithe every seventh night. Tavern gossip moves tomorrow's prices.</li>
     </ol>
     <p class="goal">Reach 2,000 gold to earn the Guild Charter.</p>
-    <p class="err" id="glErr" hidden>Your browser could not start 3D graphics (WebGL), so the shop cannot open here.</p>
-    <div class="card-actions" id="introActions"></div>
+    <div class="card-actions"><button class="btn primary wide" id="howClose">Got it</button></div>
   </div>
 </div>
 
@@ -934,18 +994,21 @@ function popMesh(m){ if(!m) return; m.userData.pop = 0; m.scale.setScalar(0.01);
 function placeItem(i, t, cost){ S.slots[i] = {type:t, cost}; refreshShelves(); popMesh(R.slotMesh[i]); }
 
 /* ---------------- camera framing ---------------- */
-const FOV = 34, EL = 0.66, AZ = 0.6;
-const camDir = az => V(Math.sin(az)*Math.cos(EL), Math.sin(EL), Math.cos(az)*Math.cos(EL));
+const FOV = 34, EL = 0.66, AZ = 0.6, TITLE_EL = 0.42;
+const camDir = (az, el = EL) => V(Math.sin(az)*Math.cos(el), Math.sin(el), Math.cos(az)*Math.cos(el));
 const FRAMES = {
+  /* Title shot: lower and closer, cropped to the shop's heart, full-bleed behind the sign and menu. */
+  title:{ target:V(-0.8,0.9,-0.9), el:TITLE_EL, fullBleed:true, pts:[V(-4.6,0,-4.0),V(3.6,0,-4.0),V(-4.6,0,2.2),V(3.6,0,2.2),V(-1,2.8,-4.0)] },
   room:{ target:V(0,0.9,-0.6), pts:[V(-5.2,0,-4.2),V(5.2,0,-4.2),V(-5.2,0,3.0),V(5.2,0,3.0),V(-5.2,3.2,-4.2),V(5.2,3.2,-4.2),V(-5.2,3.2,3.0),V(5.2,-0.4,3.0),V(-5.2,-0.4,3.0)] },
   counter:{ target:V(2.9,0.8,-0.4), pts:[V(1.3,0,-1.9),V(4.5,0,-1.9),V(1.3,0,1.1),V(4.5,0,1.1),V(2.0,1.7,-0.4),V(4.0,1.8,-0.4)] },
 };
 let W = innerWidth, H = innerHeight, topRes = 70, botRes = 0;
+const titleRes = {top:0, bottom:0};
 const desired = {target:V(0,0.9,-0.6), dist:30, top:70, avail:500};
-const cs = {target:V(0,0.9,-0.6), dist:30, top:70, avail:500, init:false};
-function fitDistance(pts, target, aspect){
+const cs = {target:V(0,0.9,-0.6), dist:30, top:70, avail:500, az:AZ, el:EL, init:false};
+function fitDistance(pts, target, aspect, el){
   fitCam.aspect = aspect; fitCam.fov = FOV; fitCam.clearViewOffset(); fitCam.updateProjectionMatrix();
-  const dir = camDir(AZ); let lo = 2, hi = 120; const v = new THREE.Vector3();
+  const dir = camDir(AZ, el); let lo = 2, hi = 120; const v = new THREE.Vector3();
   for(let i=0;i<24;i++){
     const mid = (lo+hi)/2; fitCam.position.copy(target).addScaledVector(dir, mid); fitCam.lookAt(target); fitCam.updateMatrixWorld(true);
     let ok = true; for(const p of pts){ v.copy(p).project(fitCam); if(Math.abs(v.x)>0.97 || Math.abs(v.y)>0.94){ ok=false; break; } }
@@ -954,9 +1017,12 @@ function fitDistance(pts, target, aspect){
   return hi;
 }
 function computeFraming(){
-  const f = FRAMES[R.mode]; const avail = Math.max(170, H - topRes - botRes);
-  desired.target.copy(f.target); desired.dist = fitDistance(f.pts, f.target, W/avail); desired.top = topRes; desired.avail = avail;
-  if(!cs.init){ cs.target.copy(desired.target); cs.dist = desired.dist; cs.top = desired.top; cs.avail = desired.avail; cs.init = true; }
+  const f = FRAMES[R.mode];
+  // The title shot still renders full-bleed, but the shop is framed in the gap between the sign and the menu.
+  const top = f.fullBleed ? titleRes.top : topRes;
+  const avail = Math.max(170, f.fullBleed ? H - titleRes.top - titleRes.bottom : H - topRes - botRes);
+  desired.target.copy(f.target); desired.dist = fitDistance(f.pts, f.target, W/avail, f.el || EL); desired.top = top; desired.avail = avail;
+  if(!cs.init){ cs.target.copy(desired.target); cs.dist = desired.dist; cs.top = desired.top; cs.avail = desired.avail; cs.el = f.el || EL; cs.init = true; }
 }
 function setMode(m){ if(R.mode !== m){ R.mode = m; computeFraming(); } }
 function activeSheet(){ for(const id of ['#haggle','#night','#dock']){ const e = $(id); if(!e.hidden) return e; } return null; }
@@ -965,14 +1031,24 @@ function layout(){
   const hud = $('#hud'); topRes = hud.offsetHeight;
   document.documentElement.style.setProperty('--hud-h', topRes+'px');
   const sh = activeSheet(); botRes = sh ? sh.offsetHeight + (parseFloat(getComputedStyle(sh).bottom)||0) : 0;
+  const tt = $('#title');
+  if(tt && !tt.hidden){
+    titleRes.top = Math.max(0, $('.title-top').getBoundingClientRect().bottom - 8);
+    titleRes.bottom = Math.max(0, H - $('.title-menu').getBoundingClientRect().top - 8);
+  }
   if(fitCam) computeFraming();
 }
 function updateCamera(dt){
   const k = 1 - Math.exp(-dt*3.2);
   cs.target.lerp(desired.target, k); cs.dist += (desired.dist-cs.dist)*k; cs.top += (desired.top-cs.top)*k; cs.avail += (desired.avail-cs.avail)*k;
   camera.aspect = W/cs.avail; camera.setViewOffset(W, cs.avail, 0, -cs.top, W, H); camera.updateProjectionMatrix();
-  const az = AZ + (reduceMotion ? 0 : Math.sin(R.time*0.16)*0.025);
-  camera.position.copy(cs.target).addScaledVector(camDir(az), cs.dist); camera.lookAt(cs.target);
+  // On the title the camera drifts slowly around the shop; in play it barely breathes.
+  const titling = R.mode === 'title';
+  const wantAz = titling ? (reduceMotion ? AZ - 0.15 : AZ - 0.15 + Math.sin(R.time*0.07)*0.55) : AZ + (reduceMotion ? 0 : Math.sin(R.time*0.16)*0.025);
+  const wantEl = (FRAMES[R.mode].el) || EL;
+  const ka = titling ? 1 : 1 - Math.exp(-dt*2.2);
+  cs.az += (wantAz - cs.az)*ka; cs.el += (wantEl - cs.el)*(1 - Math.exp(-dt*2.2));
+  camera.position.copy(cs.target).addScaledVector(camDir(cs.az, cs.el), cs.dist); camera.lookAt(cs.target);
 }
 
 /* ---------------- lighting ---------------- */
@@ -1650,8 +1726,10 @@ function tick(dt){
   for(let i=0;i<arr.length;i+=3){ arr[i] += dt*0.06; arr[i+1] += Math.sin(R.time*0.7 + i)*dt*0.03; if(arr[i] > 4.6) arr[i] = -4.6; }
   pa.needsUpdate = true;
   // light
-  const tp = (!S || S.phase === 'intro') ? 0.15 : S.phase === 'day' ? (R.total ? 0.05 + 0.9*(R.done/R.total) : 0.05) : 1;
-  const tn = S && (S.phase === 'night' || S.phase === 'over') ? 1 : 0;
+  const intro = !S || S.phase === 'intro';
+  const tp = intro ? 0.93 : S.phase === 'day' ? (R.total ? 0.05 + 0.9*(R.done/R.total) : 0.05) : 1;
+  const tn = intro ? 0.55 :(S.phase === 'night' || S.phase === 'over') ? 1 : 0;
+  if(intro) tickPassers(dt);
   R.lightProg += (tp - R.lightProg)*Math.min(1, dt*0.9); R.nightK += (tn - R.nightK)*Math.min(1, dt*1.2);
   applyLighting(R.lightProg, R.nightK);
   updateCamera(dt);
@@ -1702,30 +1780,71 @@ function gamePaused(){
   return !repCardEl.hidden || !modalEl.hidden;
 }
 
+/* ---------------- title screen ---------------- */
+/* While the title shows, a few late browsers wander in, look over a shelf, and wander out again. */
+const passers = []; let passerT = 0.6;
+function tickPassers(dt){
+  passerT -= dt;
+  if(passerT <= 0 && passers.length < 2){
+    passerT = rnd(3.5, 6.5);
+    const ak = pick(['knight','mage','ranger','farmer','dwarf','goblin','noble']), a = ARCH[ak];
+    const taken = passers.map(p => p.slot), free = [0,1,2,3,4,5,6,7].filter(i => !taken.includes(i)), slot = pick(free);
+    const ch = makeCharacter(a);
+    const p = {g:ch.g, parts:ch, path:[], onArrive:null, speed:rnd(1.2, 1.6), t:Math.random()*10, faceY:0, walkK:0, waitT:0, after:null, sayT:0, react:null, carrying:false, baseScale:a.scale||1, k:0, gone:false, slot};
+    p.g.position.copy(DOOR_OUT); p.g.scale.setScalar(0.01); scene.add(p.g);
+    walk(p, [DOOR_IN, SLOTS[slot].stand], () => {
+      faceTo(p, SLOTS[slot].pos); p.waitT = rnd(1.8, 3.6);
+      p.after = () => walk(p, [DOOR_IN, DOOR_OUT], () => { p.gone = true; });
+    });
+    passers.push(p);
+  }
+  for(let i = passers.length - 1; i >= 0; i--){
+    const p = passers[i]; updateChar(p, dt);
+    p.k = p.gone ? p.k - dt*3 : Math.min(1, p.k + dt*3);
+    p.g.scale.setScalar(Math.max(0.01, p.baseScale*p.k));
+    if(p.gone && p.k <= 0){ scene.remove(p.g); passers.splice(i, 1); }
+  }
+}
+function clearPassers(){ for(const p of passers) scene.remove(p.g); passers.length = 0; }
+function leaveTitle(){
+  const t = $('#title'); if(t.hidden) return;
+  document.body.classList.remove('titling'); $('#intro').hidden = true;
+  t.classList.add('leaving'); clearPassers();
+  setTimeout(() => { t.hidden = true; t.classList.remove('leaving'); }, 750);
+  requestAnimationFrame(layout);
+}
+function savedSummary(s){ return `Night ${s.day} · ${Math.round(s.gold).toLocaleString('en-US')}g · ${repLabel(s.rep)}★`; }
+
 /* ---------------- game flow ---------------- */
 function newGame(){
   clearSave(); clearCustomers(); S = newState(); R.firstHaggles = 0; nightTab = 'ledger';
-  applyUpgrades(); $('#intro').hidden = true; beginDay(); sfx('bell');
+  applyUpgrades(); leaveTitle(); beginDay(); sfx('bell');
 }
 function continueGame(s){
   clearCustomers(); S = s; if(!S.next) genNext(); S.phase = 'night';
-  applyUpgrades(); $('#intro').hidden = true; updateHUD(); showNight('market');
+  applyUpgrades(); leaveTitle(); updateHUD(); showNight('market');
 }
 function renderIntro(){
   const box = $('#introActions'); const saved = loadSave();
   if(saved){
-    box.innerHTML = `<button class="btn primary wide" id="btnCont">Continue · Night ${saved.day}</button><button class="btn ghost wide" id="btnNew">Start a new shop</button>`;
+    box.innerHTML = `<button class="btn primary wide" id="btnCont"><span>Continue</span><small></small></button><button class="btn ghost wide" id="btnNew">Start a new shop</button>`;
+    $('#btnCont small').textContent = savedSummary(saved);
     $('#btnCont').onclick = () => { audio(); continueGame(saved); };
     let armed = false;
-    $('#btnNew').onclick = e => { if(!armed){ armed = true; e.target.className = 'btn danger wide'; e.target.textContent = 'Tap again to close the old shop for good'; return; } audio(); newGame(); };
+    $('#btnNew').onclick = e => { if(!armed){ armed = true; e.currentTarget.className = 'btn danger wide'; e.currentTarget.textContent = 'Tap again to close the old shop for good'; return; } audio(); newGame(); };
   } else {
-    box.innerHTML = `<button class="btn primary wide" id="btnStart">Open the shop</button>`;
+    box.innerHTML = `<button class="btn primary wide" id="btnStart"><span>Open the shop</span><small>Day 1 · 60g in the till</small></button>`;
     $('#btnStart').onclick = () => { audio(); newGame(); };
   }
 }
+function paintTitleSound(){ const b = $('#titleSound'); if(b) b.textContent = soundOn ? 'Sound on' : 'Sound off'; }
 function wireUI(){
-  paintSound();
-  $('#soundBtn').onclick = () => { soundOn = !soundOn; try{ localStorage.setItem('hollowmere-sound', soundOn?'on':'off'); }catch(e){} paintSound(); if(soundOn){ audio(); sfx('coin'); } };
+  paintSound(); paintTitleSound();
+  const toggleSound = () => { soundOn = !soundOn; try{ localStorage.setItem('hollowmere-sound', soundOn?'on':'off'); }catch(e){} paintSound(); paintTitleSound(); if(soundOn){ audio(); sfx('coin'); } };
+  $('#soundBtn').onclick = toggleSound; $('#titleSound').onclick = toggleSound;
+  $('#howBtn').onclick = () => { $('#intro').hidden = false; };
+  $('#howClose').onclick = () => { $('#intro').hidden = true; };
+  $('#intro').addEventListener('click', e => { if(e.target.id === 'intro') $('#intro').hidden = true; });
   document.querySelectorAll('.step').forEach(b => b.addEventListener('click', () => nudge(+b.dataset.d)));
   $('#hgSlider').addEventListener('input', e => { if(R.haggle){ R.haggle.price = +e.target.value; updateHaggle(); } });
   $('#hgOffer').onclick = offer; $('#hgTake').onclick = takeCounter; $('#hgRefuse').onclick = () => walkout(false);
@@ -1741,21 +1860,23 @@ function wireUI(){
   $('#openBtn').onclick = () => { if(S && S.phase === 'night') openShop(); };
   window.addEventListener('pointerdown', () => audio(), {once:true});
   window.addEventListener('resize', layout);
-  if(window.ResizeObserver){ const ro = new ResizeObserver(() => layout()); ['#hud','#dock','#haggle','#night'].forEach(s => ro.observe($(s))); }
+  if(window.ResizeObserver){ const ro = new ResizeObserver(() => layout()); ['#hud','#dock','#haggle','#night','.title-top','.title-menu'].forEach(s => ro.observe($(s))); }
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(() => layout());
 }
 
 function start(data){
   wireUI();
   try{
     renderer = new THREE.WebGLRenderer({canvas:$('#scene'), antialias:true, powerPreference:'high-performance'});
-  }catch(e){ $('#glErr').hidden = false; return; }
+  }catch(e){ $('#glErr').hidden = false; $('#howBtn').hidden = true; return; }
   renderer.setPixelRatio(Math.min(devicePixelRatio||1, 2));
   renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   camera = new THREE.PerspectiveCamera(FOV, 1, 0.1, 300); fitCam = new THREE.PerspectiveCamera(FOV, 1, 0.1, 300);
   makeIcons();
   buildScene();
   S = newState(); applyUpgrades(); S.phase = 'intro';
-  layout(); computeFraming();
+  document.body.classList.add('titling'); R.mode = 'title';
+  layout(); computeFraming(); setTimeout(layout, 1000);
   updateHUD(); setText($('#hudTod'), 'Before opening');
   if(data && data.save && data.save.v === 1){ continueGame(migrate(data.save)); }
   else renderIntro();
